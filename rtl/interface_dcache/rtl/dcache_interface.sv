@@ -159,17 +159,28 @@ assign req_dcache_o.addr_offset = req_cpu_dcache_i.data_rs1[OFFSET_SIZE-1:0],
 assign req_dcache_o.size = {req_cpu_dcache_i.mem_size[3], req_cpu_dcache_i.mem_size[1:0]}; // TODO: Core supports bigger memory sizes than HPDC!
 assign req_dcache_o.sid = SID;
 assign req_dcache_o.tid = req_cpu_dcache_i.rd;
-assign req_dcache_o.need_rsp = 1'b1;
+//origionally 
+//assign req_dcache_o.need_rsp = 1'b1;
+// Change to:
+assign req_dcache_o.need_rsp = (req_dcache_o.op == HPDCACHE_REQ_STORE) ? 1'b0 : 1'b1;
 assign req_dcache_o.phys_indexed = 1'b1;
-assign req_dcache_o.pma.io = 1'b0;
+// assign req_dcache_o.pma.io = 1'b0; // origionally 
+assign req_dcache_o.pma.io = io_address_space;
 assign req_dcache_o.pma.uncacheable = io_address_space;
 assign req_dcache_o.pma.wr_policy_hint = HPDCACHE_WR_POLICY_AUTO;
-
+/* 
+ //origonally 
 // Unused signals on physically indexed requests
 assign req_dcache_abort_o = 1'b0,
        req_dcache_tag_o = '0,
        req_dcache_pma_o = '0;
-
+*/
+//new change
+assign req_dcache_abort_o = 1'b0,
+       req_dcache_tag_o = '0,
+       req_dcache_pma_o.io = io_address_space,
+       req_dcache_pma_o.uncacheable = io_address_space,
+       req_dcache_pma_o.wr_policy_hint = HPDCACHE_WR_POLICY_AUTO;
 //-------------------------------------------------------------
 // CPU Interface
 //-------------------------------------------------------------
@@ -194,7 +205,16 @@ assign resp_dcache_cpu_o.ordered = wbuf_empty_i;
 
 logic send, receive;
 
-assign send    = core_req_valid_o && dcache_ready_i;
+// assign send    = core_req_valid_o && dcache_ready_i; // origionally 
+/**
+Stores have need_rsp=0 - hpdcache will never send dcache_valid_i for them
+The receive path transaction_table[rsp_dcache_i.tid] <= IDLE will never fire for stores
+The rd field for a store is not a real destination - it's either 0 or repurposed as the physical register allocated during renaming, but the store never writes back to it
+The table's purpose is to prevent two simultaneous requests to the same physical destination register  stores have no destination to protect
+*/
+
+assign send = core_req_valid_o && dcache_ready_i 
+              && (req_dcache_o.op != HPDCACHE_REQ_STORE);
 assign receive = dcache_valid_i;
 
 `ifdef SIMULATION

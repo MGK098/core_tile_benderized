@@ -388,7 +388,14 @@ assign debug_reg_rf_rdata_o         = debug_reg_out.rf_rdata;
 
 // *** iCache ***
 
-nc_icache_buffer nc_icache_bf (
+
+
+// *** iCache ***
+
+
+nc_icache_buffer  #(
+    .DRAC_CFG ( DracCfg ) 
+)nc_icache_bf(
     .clk_i,
     .rstn_i,
 
@@ -396,8 +403,9 @@ nc_icache_buffer nc_icache_bf (
     .core_req_valid_i(core_fetch_req_valid),
     .core_req_addr_i({icache_req_vpn, icache_req_idx}),
     .core_req_invalidate_i(icache_flush),
-    .core_req_kill_i(icache_req_kill),
-
+    //.core_req_kill_i(icache_req_kill),  
+    //.core_req_kill_i(icache_req_kill & ~brom_req_valid_o),
+    .core_req_kill_i(icache_req_kill & ~icache_nc_busy),
     .core_rsp_nc_busy_o(icache_nc_busy),
     .core_rsp_valid_o(icache_nc_valid),
     .core_rsp_data_o(icache_nc_data),
@@ -446,8 +454,8 @@ sargantana_top_icache # (
 
     .icache_treq_valid_o        (icache_tlb_req_valid),
     .icache_treq_vpn_o          (icache_tlb_req_vpn),
-
-    .ifill_resp_valid_i         (io_mem_grant_valid),
+    .ifill_resp_valid_i         (io_mem_grant_valid & (&io_mem_grant_bits_addr_beat)),
+    //.ifill_resp_valid_i         (io_mem_grant_valid),
     .ifill_resp_ack_i           (&io_mem_grant_bits_addr_beat),
     .ifill_resp_data_i          (io_mem_grant_bits_data),
     .ifill_resp_inv_valid_i     (io_mem_grant_inval),
