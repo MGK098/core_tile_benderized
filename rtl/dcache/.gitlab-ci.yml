@@ -1,0 +1,73 @@
+include:
+  - project: 'hwdesign/ci/generic_ci'
+    ref: $GENERIC_CI_BRANCH
+    file:
+      - jobs_template.yml
+
+## This workflow avoids duplicate pipelines when there is an open merge request (commit_branch + merge_request) 
+## so only the open merge request will be executed and not the commit_branch. PIPELINE_BRANCH will be used to refer to
+## CI_COMMIT_BRANCH or CI_MERGE_REQUEST_SOURCE_BRANCH_NAME, we will not differentiate between them.
+## If a rule matches, when: always is the default, and when: never is the default if nothing matches
+workflow:
+  rules:
+    - !reference [.rules, global_std]
+
+.rules_default:
+    - if: (($CI_PIPELINE_SOURCE == 'web' || $CI_PIPELINE_SOURCE == 'schedule') && $do_gen_bitstream_pkg)
+      when: never
+    - if: ($do_synthesis && ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web"))
+      when: never
+    - if: (($CI_PIPELINE_SOURCE == 'web' || $CI_PIPELINE_SOURCE == 'schedule') && $OPERATION == "boot")
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "pipeline"'
+      when: never
+    - if: (($CI_PIPELINE_SOURCE == "schedule" || 
+          $CI_PIPELINE_SOURCE == "web" || 
+          $CI_PIPELINE_SOURCE == "pipeline") && $REGRESS_TYPE)
+      when: never
+    - when: always
+
+.rules_merge_request:
+    - !reference [.rules, only_merge]
+
+stages:
+  - linting
+  - building
+  - simulation
+
+testbench-build:
+  extends: .verilator  
+  stage: building
+  rules:
+    - !reference [.rules_default]
+  script:
+    - module load verilator
+    - module load gcc
+    - source .gitlab/ci/env.sh
+    - .github/scripts/install_systemc.sh
+    - make -C rtl/tb/ build CONFIG=lox_config.mk
+  cache:
+    key: systemc
+    paths:
+      - build/
+  artifacts:
+    paths:
+    - build/**/*.so
+    - rtl/tb/build/Vhpdcache_wrapper
+    - rtl/tb/build/*.log
+    - rtl/tb/build/*.scan
+
+testbench-nonregression:
+  extends: .verilator  
+  stage: simulation
+  rules:
+    - !reference [.rules_default]
+  needs: ["testbench-build"]
+  dependencies:
+    - testbench-build
+  script:
+    - source .gitlab/ci/env.sh
+    - make -C rtl/tb/ nonregression NTRANSACTIONS=50000
+  artifacts:
+    paths:
+    - rtl/tb/logs/

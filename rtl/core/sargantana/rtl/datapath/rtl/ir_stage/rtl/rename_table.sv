@@ -1,0 +1,333 @@
+/*
+ * Copyright 2025 BSC*
+ * *Barcelona Supercomputing Center (BSC)
+ * 
+ * SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+ * 
+ * Licensed under the Solderpad Hardware License v 2.1 (the “License”); you
+ * may not use this file except in compliance with the License, or, at your
+ * option, the Apache License version 2.0. You may obtain a copy of the
+ * License at
+ * 
+ * https://solderpad.org/licenses/SHL-2.1/
+ * 
+ * Unless required by applicable law or agreed to in writing, any work
+ * distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+//`default_nettype none
+
+module rename_table
+    import drac_pkg::*;
+    import riscv_pkg::*;
+#(
+    parameter NUM_RENAME_PORTS = 2,    // Number of registers to rename per cycle
+    parameter NUM_WRITEBACK_PORTS = 2, // Number of freed registers per cycle
+    parameter HARDWIRED_ZERO = 1       // Hardwire register 0 to constant 0
+)
+(
+    input logic                         clk_i,               // Clock Singal
+    input logic                         rstn_i,              // Negated Reset Signal
+
+    input reg_t [NUM_RENAME_PORTS-1:0]    read_src_i,          // Read source register mapping
+    input reg_t                         old_dst_i,           // Read and write to old destination register
+    input logic                         write_dst_i,         // Needs to write to old destination register
+    input phreg_t                       new_dst_i,           // Wich register write to old destination register
+
+    input logic [NUM_RENAME_PORTS-1:0]    use_rs_i,           // Instruction uses source register
+
+    input logic   [NUM_WRITEBACK_PORTS-1:0] ready_i,             // New register is ready
+    input reg_t   [NUM_WRITEBACK_PORTS-1:0] vaddr_i,             // New register is ready
+    input phreg_t [NUM_WRITEBACK_PORTS-1:0] paddr_i,             // New register is ready
+
+    input logic                         recover_commit_i,    // Copy commit table on register table
+    input reg_t [1:0]                   commit_old_dst_i,    // Read and write to old destination register at commit table
+    input logic [1:0]                   commit_write_dst_i,  // Needs to write to old destination register at commit table
+    input phreg_t [1:0]                 commit_new_dst_i,    // Wich register write to old destination register at commit table
+
+    input logic                         do_checkpoint_i,     // After renaming do a checkpoint
+    input logic                         do_recover_i,        // Recover a checkpoint
+    input logic                         delete_checkpoint_i, // Delete tail checkpoint
+    input checkpoint_ptr                recover_checkpoint_i,// Label of the checkpoint to recover  
+
+    output phreg_t [NUM_RENAME_PORTS-1:0] src_o,               // Read source register mapping
+    output logic [NUM_RENAME_PORTS-1:0]   rdy_o,               // Ready source register
+    output phreg_t                      old_dst_o,           // Read destination register mapping
+    output logic                        rdy_old_dst_o,       // Ready destination register
+
+    output checkpoint_ptr               checkpoint_o,        // Label of checkpoint
+    output logic                        out_of_checkpoints_o // No more checkpoints
+);
+
+function [$clog2(NUM_CHECKPOINTS):0] trunc_num_checkpoint_sum(input [$clog2(NUM_CHECKPOINTS)+1:0] val_in);
+  trunc_num_checkpoint_sum = val_in[$clog2(NUM_CHECKPOINTS):0];
+endfunction
+
+function [$clog2(NUM_CHECKPOINTS)-1:0] trunc_checkpoint_ptr_sum(input [$clog2(NUM_CHECKPOINTS):0] val_in);
+  trunc_checkpoint_ptr_sum = val_in[$clog2(NUM_CHECKPOINTS)-1:0];
+endfunction
+
+// Point to the actual version of free list
+checkpoint_ptr version_head_q, version_head_d;
+checkpoint_ptr version_head_nxt;
+checkpoint_ptr version_tail_q, version_tail_d;
+
+//Num must be 1 bit bigger than checkpoint pointer
+logic [$clog2(NUM_CHECKPOINTS):0] num_checkpoints_q, num_checkpoints_d;
+
+logic write_enable;
+logic read_enable;
+logic checkpoint_enable;
+logic commit_write_enable_0;
+logic commit_write_enable_1;
+logic [NUM_WRITEBACK_PORTS-1:0] ready_enable;
+logic [NUM_RENAME_PORTS-1:0][NUM_WRITEBACK_PORTS-1:0] rdy;
+logic [NUM_WRITEBACK_PORTS-1:0] rdy_old_dst;
+
+// User can do checkpoints when there is at least one free copy of the free list
+assign checkpoint_enable = do_checkpoint_i & (num_checkpoints_q < (NUM_CHECKPOINTS - 1)) & (~do_recover_i) & (~recover_commit_i);
+
+generate
+    if (HARDWIRED_ZERO) begin
+        // User can write to table to add new destination register
+        assign write_enable = write_dst_i & (~do_recover_i) & (old_dst_i != 5'h0) & (~recover_commit_i);
+
+        // User can wirte to commit table to add new destination register
+        assign commit_write_enable_0 = commit_write_dst_i[0] & (commit_old_dst_i[0] != 5'h0) & (~recover_commit_i);
+        assign commit_write_enable_1 = commit_write_dst_i[1] & (commit_old_dst_i[1] != 5'h0) & (~recover_commit_i);
+    end else begin
+        // User can write to table to add new destination register
+        assign write_enable = write_dst_i & (~do_recover_i) & (~recover_commit_i);
+
+        // User can wirte to commit table to add new destination register
+        assign commit_write_enable_0 = commit_write_dst_i[0] & (~recover_commit_i);
+        assign commit_write_enable_1 = commit_write_dst_i[1] & (~recover_commit_i);
+    end
+endgenerate
+
+// User can read the table if no recover action is being done
+assign read_enable = (~do_recover_i) & (~recover_commit_i);
+
+// User can mark registers as ready if no recover action is being done
+// Multiple register can be marked as ready
+always_comb begin
+    for (int i = 0; i<NUM_WRITEBACK_PORTS; ++i) begin
+        ready_enable[i] = ready_i[i] & (~recover_commit_i);
+    end
+end
+
+
+// Look up table. Not for r0
+logic  ready_table_d [NUM_ISA_REGISTERS-1:0][NUM_CHECKPOINTS-1:0];
+phreg_t  register_table_d [NUM_ISA_REGISTERS-1:0][NUM_CHECKPOINTS-1:0];
+phreg_t  commit_table_d   [NUM_ISA_REGISTERS-1:0];
+
+logic ready_table_q [NUM_ISA_REGISTERS-1:0][NUM_CHECKPOINTS-1:0];
+phreg_t register_table_q [NUM_ISA_REGISTERS-1:0][NUM_CHECKPOINTS-1:0];
+phreg_t commit_table_q   [NUM_ISA_REGISTERS-1:0];
+
+always_comb begin
+    register_table_d  = register_table_q;
+    ready_table_d     = ready_table_q;
+    commit_table_d    = commit_table_q;
+    version_head_d    = version_head_q;       
+    num_checkpoints_d = num_checkpoints_q;
+    version_head_nxt  = trunc_checkpoint_ptr_sum(version_head_q + 2'b1);
+    if (recover_commit_i) begin // Recover commit table because exception
+        for (integer j = 0; j < NUM_ISA_REGISTERS; j++) begin
+            register_table_d[j][0] = commit_table_q[j];
+            ready_table_d[j][0] = 1'b1;
+        end
+        version_head_d = 2'b0;       // Current table, 0
+        num_checkpoints_d = 3'b00;   // No checkpoints
+        version_tail_d = 2'b0;       // Last reserved table 0
+
+    end 
+    else begin
+
+        // When checkpoint is freed increment tail
+        version_tail_d = trunc_checkpoint_ptr_sum(version_tail_q + {1'b0, delete_checkpoint_i});
+
+        // On recovery, head points to old checkpoint. Do not rename next instruction.
+        if (do_recover_i) begin                    
+            version_head_d = recover_checkpoint_i;
+            if (recover_checkpoint_i >= version_tail_q)    // Recompute number of checkpoints
+                num_checkpoints_d = {1'b0, recover_checkpoint_i} - {1'b0, version_tail_q};
+            else 
+                num_checkpoints_d = NUM_CHECKPOINTS - {1'b0, version_tail_q} + {1'b0, recover_checkpoint_i};
+            end
+        else begin
+
+            // Recompute number of checkpoints
+            num_checkpoints_d = trunc_num_checkpoint_sum(num_checkpoints_q + {2'b0, checkpoint_enable} - {2'b0, delete_checkpoint_i});
+
+            // On checkpoint first do checkpoint and then rename if needed
+            // For checkpoint advance pointers
+            if (checkpoint_enable) begin
+                for (int i=0; i < NUM_ISA_REGISTERS; i++) begin
+                    register_table_d[i][version_head_nxt] = register_table_q[i][version_head_q];
+                    ready_table_d[i][version_head_nxt] = ready_table_q[i][version_head_q];
+                end
+                version_head_d = version_head_nxt;
+
+                if (write_enable) begin
+                    register_table_d[old_dst_i][version_head_nxt] = new_dst_i;
+                    ready_table_d[old_dst_i][version_head_nxt] = 1'b0;
+                    register_table_d[old_dst_i][version_head_q] = new_dst_i;
+                    ready_table_d[old_dst_i][version_head_q] = 1'b0;
+                end
+            end else begin
+                // Third write new destination register
+                if (write_enable) begin
+                    register_table_d[old_dst_i][version_head_q] = new_dst_i;
+                    ready_table_d[old_dst_i][version_head_q] = 1'b0;
+                end
+            end             
+        end
+
+        // Update commit table
+        if (commit_write_enable_0 & !commit_write_enable_1) begin
+            commit_table_d[commit_old_dst_i[0]] = commit_new_dst_i[0];
+        end else if (commit_write_enable_0 & commit_write_enable_1 & (commit_old_dst_i[0] == commit_old_dst_i[1])) begin
+            commit_table_d[commit_old_dst_i[1]] = commit_new_dst_i[1];
+        end else if (commit_write_enable_0 & commit_write_enable_1 & (commit_old_dst_i[0] != commit_old_dst_i[1])) begin
+            commit_table_d[commit_old_dst_i[0]] = commit_new_dst_i[0];
+            commit_table_d[commit_old_dst_i[1]] = commit_new_dst_i[1];
+        end else if (!commit_write_enable_0 & commit_write_enable_1) begin
+            commit_table_d[commit_old_dst_i[1]] = commit_new_dst_i[1];
+        end
+
+        // Write new ready register
+        for (int i = 0; i < NUM_WRITEBACK_PORTS; ++i) begin
+            if (ready_enable[i]) begin
+                for(int j = 0; j < NUM_CHECKPOINTS; j++) begin
+                    if (~checkpoint_enable | (checkpoint_ptr'(j) != (version_head_nxt))) begin
+                        if ((register_table_q[vaddr_i[i]][j] == paddr_i[i]) & ~(write_enable & (vaddr_i[i] == old_dst_i) & (checkpoint_ptr'(j) == version_head_q) )) 
+                            ready_table_d[vaddr_i[i]][j] = 1'b1;
+                    end else if ((register_table_q[vaddr_i[i]][version_head_q] == paddr_i[i]) & ~(write_enable & (vaddr_i[i] == old_dst_i))) begin
+                        ready_table_d[vaddr_i[i]][version_head_nxt] = 1'b1; 
+                    end
+                end
+            end
+        end
+    end
+end
+
+always_ff @(posedge clk_i, negedge rstn_i) 
+begin
+    if(~rstn_i) begin
+        src_o <= '0;
+        rdy_o <= 1'b0;
+        old_dst_o <= '0;  
+        rdy_old_dst_o <= '0;
+        checkpoint_o <= '0;
+    end else if (recover_commit_i) begin // Recover commit table because exception
+        src_o <= '0;
+        rdy_o <= 1'b0;
+        old_dst_o <= '0;
+        rdy_old_dst_o <= '0;
+        checkpoint_o <= '0;
+    end else begin
+        if (read_enable && !do_recover_i) begin
+            for (int i = 0; i < NUM_RENAME_PORTS; i++) begin
+                src_o[i] <= register_table_q[read_src_i[i]][version_head_q];
+                rdy_o[i] <= ready_table_q[read_src_i[i]][version_head_q] | (|rdy[i]) | (~use_rs_i[i]);
+            end
+            old_dst_o <= register_table_q[old_dst_i][version_head_q];
+            rdy_old_dst_o <= ready_table_q[old_dst_i][version_head_q] | (|rdy_old_dst);
+        end
+        checkpoint_o <= version_head_q;
+    end
+end
+
+always_ff @(posedge clk_i, negedge rstn_i) 
+begin
+    if(~rstn_i) begin
+        // Table initial state
+        for (integer j = 0; j < NUM_ISA_REGISTERS; j++) begin
+            for (integer k = 0; k < NUM_CHECKPOINTS; k++) begin
+                register_table_q[j][k] <= j;
+                ready_table_q[j][k] <= 1'b1;
+            end
+            commit_table_q[j] <= j;
+        end
+        // Checkpoint signals
+        version_head_q <= 2'b0;       // Current table, 0
+        num_checkpoints_q <= 3'b00;   // No checkpoints
+        version_tail_q <= 2'b0;       // Last reserved table 0
+    end else begin
+        register_table_q  <= register_table_d;
+        ready_table_q     <= ready_table_d;
+        commit_table_q    <= commit_table_d;
+        version_head_q    <= version_head_d;       
+        num_checkpoints_q <= num_checkpoints_d;
+        version_tail_q    <= version_tail_d;
+    end
+end
+
+always_comb begin
+    if (read_enable) begin
+        for (int j = 0; j < NUM_WRITEBACK_PORTS; ++j) begin
+            for (int i = 0; i < NUM_RENAME_PORTS; ++i) begin
+                rdy[i][j] = ready_i[j] && (read_src_i[i] == vaddr_i[j]) && (register_table_q[read_src_i[i]][version_head_q] == paddr_i[j]);
+            end
+            rdy_old_dst[j] = ready_i[j] & (old_dst_i == vaddr_i[j]) & (register_table_q[old_dst_i][version_head_q] == paddr_i[j]);
+        end
+    end else begin
+        rdy = '0;
+        rdy_old_dst = '0;
+    end 
+end
+
+assign out_of_checkpoints_o = (num_checkpoints_q == (NUM_CHECKPOINTS - 1));
+
+`ifdef CHECK_RENAME
+
+(* keep="TRUE" *) (* mark_debug="TRUE" *) logic [NUM_CHECKPOINTS-1:0] error_rename_q;
+logic [NUM_CHECKPOINTS-1:0] error_rename_d;
+(* keep="TRUE" *) (* mark_debug="TRUE" *) logic  error_actual_coechpoint_q;
+logic error_actual_coechpoint_d;
+(* keep="TRUE" *) (* mark_debug="TRUE" *) logic error_commit_q;
+logic error_commit_d;
+
+always_comb begin
+    for(int i=0;i<NUM_CHECKPOINTS;i++) begin
+        error_rename_d[i] = 1'b0;
+        for (int j=0; j<NUM_ISA_REGISTERS; j++)begin
+            for (int k=0; k<NUM_ISA_REGISTERS; k++)begin
+                if (register_table_q[j][i] == register_table_q[k][i] && j!=k) begin
+                    error_rename_d[i] |= 1'b1; 
+                end
+            end
+        end
+    end
+    error_commit_d = 1'b0; 
+    for (int j=0; j<NUM_ISA_REGISTERS; j++)begin
+        for (int k=0; k<NUM_ISA_REGISTERS; k++)begin
+            if (commit_table_q[j] == commit_table_q[k] && j!=k) begin
+                error_commit_d |= 1'b1; 
+            end
+        end
+    end
+
+end
+
+always_ff @(posedge clk_i, negedge rstn_i) 
+begin
+    if(~rstn_i) begin
+        error_rename_q <= '0;
+        error_actual_coechpoint_q <= '0;
+        error_commit_q <= '0;
+    end else begin
+        error_rename_q <= error_rename_d;
+        error_actual_coechpoint_q <= error_actual_coechpoint_d;
+        error_commit_q <= error_actual_coechpoint_d;
+    end
+end
+
+`endif
+
+endmodule
