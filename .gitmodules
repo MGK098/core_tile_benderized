@@ -1,3 +1,16 @@
 [submodule "rtl/common_cells"]
 	path = rtl/common_cells
 	url = https://github.com/pulp-platform/common_cells.git
+[submodule "rtl/core/sargantana"]
+	path = rtl/core/sargantana
+	url = https://github.com/bsc-loca/sargantana.git
+[submodule "rtl/dcache"]
+	path = rtl/dcache
+	url = https://github.com/bsc-loca/cv-hpdcache.git
+[submodule "rtl/icache"]
+	path = rtl/icache
+	url = https://github.com/bsc-loca/instruction_cache.git
+	branch = ft/cacheline_64b
+[submodule "simulator/bsc-dm"]
+	path = simulator/bsc-dm
+	url = https://github.com/bsc-loca/bsc-dm.git
