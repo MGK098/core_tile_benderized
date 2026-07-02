@@ -62,8 +62,8 @@ cd $TOP/rtl/datapath/rtl/exe_stage/tb/tb_alu/
 (./runtest.sh -c ) 2>&1 | tee -a $artifact
 echo "******** questasim test has finish for this file **********" 2>&1 | tee -a $artifact
 
-#branch_unit.sv
-echo "*** results of file: branch_unit.sv" 2>&1 | tee -a $artifact
+#branch_unit_sarg.sv
+echo "*** results of file: branch_unit_sarg.sv" 2>&1 | tee -a $artifact
 cd $TOP/rtl/datapath/rtl/exe_stage/tb/tb_branch_unit/
 (./runtest.sh -c ) 2>&1 | tee -a $artifact
 echo "******** questasim test has finish for this file **********" 2>&1 | tee -a $artifact

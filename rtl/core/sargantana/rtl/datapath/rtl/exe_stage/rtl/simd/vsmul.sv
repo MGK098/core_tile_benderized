@@ -20,7 +20,7 @@
 
 module vsmul
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input sew_t                 sew_i,          // Element width
     input vxrm_t                vxrm_i,         // Vector Fixed-Point Rounding Mode

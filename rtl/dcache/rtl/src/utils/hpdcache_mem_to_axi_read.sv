@@ -23,8 +23,8 @@
  *  Description   : Dcache memory request to axi read channels
  *  History       :
  */
-module hpdcache_mem_to_axi_read
-import hpdcache_pkg::*;
+module hpdcache_mem_to_axi_read_sarg
+import hpdcache_pkg_sarg::*;
 #(
     parameter type hpdcache_mem_req_t    = logic,
     parameter type hpdcache_mem_resp_r_t = logic,

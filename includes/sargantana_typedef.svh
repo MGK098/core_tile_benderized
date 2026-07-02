@@ -10,25 +10,25 @@
 `include "hpdcache_typedef.svh"
 
 // Builds an HPDC Configuration based on a Drac Cfg core configuration
-function automatic hpdcache_pkg::hpdcache_cfg_t sargBuildHPDCCfg(input drac_pkg::drac_cfg_t DracCfg);
-    hpdcache_pkg::hpdcache_user_cfg_t HPDcacheUserCfg = '{
+function automatic hpdcache_pkg_sarg::hpdcache_cfg_t sargBuildHPDCCfg(input drac_pkg::drac_cfg_t DracCfg);
+    hpdcache_pkg_sarg::hpdcache_user_cfg_t HPDcacheUserCfg = '{
         // 2 requesters: Core and MMU
         nRequesters: 2,
         // Address and word size as configured in drac_pkg
         paWidth: drac_pkg::PHY_ADDR_SIZE,
-        wordWidth: riscv_pkg::XLEN,
+        wordWidth: riscv_pkg_sarg::XLEN,
         // Configure size, associativity and cacheline size via config parameter
         sets: DracCfg.DCacheNumSets,
         ways: DracCfg.DCacheNumWays,
-        clWords: DracCfg.DCacheLineWidth / riscv_pkg::XLEN,
+        clWords: DracCfg.DCacheLineWidth / riscv_pkg_sarg::XLEN,
         // Configure the request to access the whole cacheline
-        reqWords: DracCfg.DCacheLineWidth / riscv_pkg::XLEN,
+        reqWords: DracCfg.DCacheLineWidth / riscv_pkg_sarg::XLEN,
         // Core is configured to support 7 bit IDs, currently hardcoded!
         reqTransIdWidth: 7,
         // Up to 8 requesters
         reqSrcIdWidth: 3,
         // Use Pseudo-LRU
-        victimSel: hpdcache_pkg::HPDCACHE_VICTIM_PLRU,
+        victimSel: hpdcache_pkg_sarg::HPDCACHE_VICTIM_PLRU,
         // Put two ways side-by-side on an SRAM line
         dataWaysPerRamWord: 2,
         // Put all the sets in the same SRAM (TODO: Confirm with Cesar)
@@ -36,7 +36,7 @@ function automatic hpdcache_pkg::hpdcache_cfg_t sargBuildHPDCCfg(input drac_pkg:
         // Use byte-enable SRAMs
         dataRamByteEnable: 1'b1,
         // Access the whole cacheline in a single cycle, for request & refills
-        accessWords: DracCfg.DCacheLineWidth / riscv_pkg::XLEN,
+        accessWords: DracCfg.DCacheLineWidth / riscv_pkg_sarg::XLEN,
         // Configure the MSHRs via the config parameter
         mshrSets: DracCfg.DCacheMSHRSets,
         mshrWays: DracCfg.DCacheMSHRWays,
@@ -73,7 +73,7 @@ function automatic hpdcache_pkg::hpdcache_cfg_t sargBuildHPDCCfg(input drac_pkg:
         lowLatency: 1'b1
     };
 
-    return hpdcache_pkg::hpdcacheBuildConfig(HPDcacheUserCfg);
+    return hpdcache_pkg_sarg::hpdcacheBuildConfig(HPDcacheUserCfg);
 endfunction
 
 // Builds the HPDC core request and response types based on the HPDC configuration

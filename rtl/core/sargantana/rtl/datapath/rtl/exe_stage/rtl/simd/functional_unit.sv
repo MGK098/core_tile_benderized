@@ -20,7 +20,7 @@
 
 module functional_unit
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input wire                  clk_i,           // Clock
     input wire                  rstn_i,          // Reset

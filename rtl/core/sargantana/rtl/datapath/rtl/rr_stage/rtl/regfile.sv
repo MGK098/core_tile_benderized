@@ -22,7 +22,7 @@
 
 module regfile 
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 #(
     parameter int NUM_READ_PORTS = 2,
     parameter int NUM_WRITEBACK_PORTS = 1,

@@ -20,7 +20,7 @@
 
 module alu_count_zeros
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input bus64_t data_rs1_i,
     instr_type_t instr_type_i,

@@ -19,7 +19,7 @@
  */
  
 import drac_pkg::*;
-import riscv_pkg::*;
+import riscv_pkg_sarg::*;
 
 module vpopc (
     input instr_type_t              instr_type_i,   // Instruction type

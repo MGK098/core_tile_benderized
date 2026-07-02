@@ -26,11 +26,11 @@
 `include "hpdcache_typedef.svh"
 
 module hpdcache_lint
-  import hpdcache_pkg::*;
+  import hpdcache_pkg_sarg::*;
 #(
   localparam int unsigned HPDCACHE_NREQUESTERS = 1,
 
-  localparam hpdcache_pkg::hpdcache_user_cfg_t HPDcacheUserCfg = '{
+  localparam hpdcache_pkg_sarg::hpdcache_user_cfg_t HPDcacheUserCfg = '{
       nRequesters: HPDCACHE_NREQUESTERS,
       paWidth: 56,
       wordWidth: 64,
@@ -40,7 +40,7 @@ module hpdcache_lint
       reqWords: 1,
       reqTransIdWidth: 6,
       reqSrcIdWidth: 3,
-      victimSel: hpdcache_pkg::HPDCACHE_VICTIM_RANDOM,
+      victimSel: hpdcache_pkg_sarg::HPDCACHE_VICTIM_RANDOM,
       dataWaysPerRamWord: 2,
       dataSetsPerRam: 64,
       dataRamByteEnable: 1'b1,
@@ -67,7 +67,7 @@ module hpdcache_lint
       wbEn: 1'b1
   },
 
-  localparam hpdcache_pkg::hpdcache_cfg_t HPDcacheCfg = hpdcache_pkg::hpdcacheBuildConfig(
+  localparam hpdcache_pkg_sarg::hpdcache_cfg_t HPDcacheCfg = hpdcache_pkg_sarg::hpdcacheBuildConfig(
       HPDcacheUserCfg
   ),
 
@@ -104,7 +104,7 @@ module hpdcache_lint
                            hpdcache_req_sid_t,
                            hpdcache_req_tid_t),
 
-  localparam type hpdcache_wbuf_timecnt_t = logic [HPDcacheCfg.u.wbufTimecntWidth-1:0]
+  localparam type hpdcache_wbuf_sarg_timecnt_t = logic [HPDcacheCfg.u.wbufTimecntWidth-1:0]
 )
 
 (
@@ -119,7 +119,7 @@ module hpdcache_lint
   input  hpdcache_req_t               core_req_i               [HPDCACHE_NREQUESTERS],
   input  logic                        core_req_abort_i         [HPDCACHE_NREQUESTERS],
   input  hpdcache_tag_t               core_req_tag_i           [HPDCACHE_NREQUESTERS],
-  input  hpdcache_pkg::hpdcache_pma_t core_req_pma_i           [HPDCACHE_NREQUESTERS],
+  input  hpdcache_pkg_sarg::hpdcache_pma_t core_req_pma_i           [HPDCACHE_NREQUESTERS],
   output logic                        core_rsp_valid_o         [HPDCACHE_NREQUESTERS],
   output hpdcache_rsp_t               core_rsp_o               [HPDCACHE_NREQUESTERS],
 
@@ -144,9 +144,9 @@ module hpdcache_lint
   input  hpdcache_mem_resp_w_t        mem_resp_write_i
 );
 
-  hpdcache #(
+  hpdcache_sarg #(
       .HPDcacheCfg          (HPDcacheCfg),
-      .wbuf_timecnt_t       (hpdcache_wbuf_timecnt_t),
+      .wbuf_timecnt_t       (hpdcache_wbuf_sarg_timecnt_t),
       .hpdcache_tag_t       (hpdcache_tag_t),
       .hpdcache_data_word_t (hpdcache_data_word_t),
       .hpdcache_data_be_t   (hpdcache_data_be_t),

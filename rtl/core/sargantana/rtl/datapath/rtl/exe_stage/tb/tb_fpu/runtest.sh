@@ -9,7 +9,7 @@ rm -rf lib_fpu
 vlib lib_fpu
 vmap work $PWD/lib_fpu
 vlog $VLOG_FLAGS +acc=rn +incdir+${ROOT}includes \
-                                  ${ROOT}includes/riscv_pkg.sv \
+                                  ${ROOT}includes/riscv_pkg_sarg.sv \
                                   ${ROOT}includes/drac_pkg.sv \
                                   ${ROOT}includes/registers.svh \
                                   ${ROOT}includes/fpuv_pkg.sv \

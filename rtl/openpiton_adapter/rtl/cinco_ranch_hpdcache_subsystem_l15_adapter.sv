@@ -24,7 +24,7 @@
  *  History      :
  */
 module cinco_ranch_hpdcache_subsystem_l15_adapter
-       import wt_cache_pkg::*; import hpdcache_pkg::*;
+       import wt_cache_pkg::*; import hpdcache_pkg_sarg::*;
 //  Parameters
 //  {{{
 #(
@@ -145,7 +145,7 @@ module cinco_ranch_hpdcache_subsystem_l15_adapter
   //     transaction without receiving the corresponding ready signal. This
   //     behavior is not supported by AXI.
   //  -  Cut a possible long timing path.
-  hpdcache_fifo_reg #(
+  hpdcache_fifo_reg_sarg #(
       .FIFO_DEPTH  (1),
       .fifo_data_t (hpdcache_mem_req_t)
   ) i_icache_miss_req_fifo (
@@ -168,8 +168,8 @@ module cinco_ranch_hpdcache_subsystem_l15_adapter
          icache_miss_req_wdata.mem_req_len       = '0,
          icache_miss_req_wdata.mem_req_size      = ICACHE_MEM_REQ_CL_SIZE,
          icache_miss_req_wdata.mem_req_id        = '0,
-         icache_miss_req_wdata.mem_req_command   = hpdcache_pkg::HPDCACHE_MEM_READ,
-         icache_miss_req_wdata.mem_req_atomic    = hpdcache_pkg::HPDCACHE_MEM_ATOMIC_ADD, // Field is ignored since command is HPDCACHE_MEM_READ
+         icache_miss_req_wdata.mem_req_command   = hpdcache_pkg_sarg::HPDCACHE_MEM_READ,
+         icache_miss_req_wdata.mem_req_atomic    = hpdcache_pkg_sarg::HPDCACHE_MEM_ATOMIC_ADD, // Field is ignored since command is HPDCACHE_MEM_READ
          icache_miss_req_wdata.mem_req_cacheable = ~brom_req_valid_i;
   //    }}}
 
@@ -236,8 +236,8 @@ module cinco_ranch_hpdcache_subsystem_l15_adapter
          
   //Read
   assign dcache_read_ready_o                  = mem_req_ready[DcacheReadPort],
-         mem_req_valid[DcacheReadPort]            = (dcache_read_i.mem_req_command == hpdcache_pkg::HPDCACHE_MEM_ATOMIC &&
-                                                     dcache_read_i.mem_req_atomic == hpdcache_pkg::HPDCACHE_MEM_ATOMIC_LDEX)
+         mem_req_valid[DcacheReadPort]            = (dcache_read_i.mem_req_command == hpdcache_pkg_sarg::HPDCACHE_MEM_ATOMIC &&
+                                                     dcache_read_i.mem_req_atomic == hpdcache_pkg_sarg::HPDCACHE_MEM_ATOMIC_LDEX)
                                                      ? dcache_read_valid_i & sc_backoff_over : dcache_read_valid_i,
          mem_req_pid[DcacheReadPort]              = DcacheReadPort,
          mem_req[DcacheReadPort]                  = dcache_read_i,

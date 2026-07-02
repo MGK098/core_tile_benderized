@@ -20,7 +20,7 @@
 
 module alu_add
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input bus64_t data_rs1_i,
     input bus64_t data_rs2_i,

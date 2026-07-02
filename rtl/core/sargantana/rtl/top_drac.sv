@@ -168,7 +168,7 @@ req_cpu_csr_t req_datapath_csr_interface;
 
 csr_ptw_comm_t csr_ptw_comm;
 logic [drac_pkg::PPN_SIZE-1:0] csr_satp;
-assign csr_ptw_comm.satp = {{(riscv_pkg::XLEN-PHY_ADDR_SIZE){1'b0}}, csr_satp}; // PTW expects 64 bits
+assign csr_ptw_comm.satp = {{(riscv_pkg_sarg::XLEN-PHY_ADDR_SIZE){1'b0}}, csr_satp}; // PTW expects 64 bits
 
 `ifdef EXTERNAL_HPM_EVENT_NUM
 localparam HPM_EXT_NUM_EVENT = `EXTERNAL_HPM_EVENT_NUM;

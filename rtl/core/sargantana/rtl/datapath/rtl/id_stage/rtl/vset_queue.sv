@@ -20,7 +20,7 @@
 
 module vset_queue
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input logic                     clk_i,              // Clock Singal
     input logic                     rstn_i,             // Negated Reset Signal

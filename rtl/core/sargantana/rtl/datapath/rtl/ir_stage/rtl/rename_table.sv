@@ -22,7 +22,7 @@
 
 module rename_table
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 #(
     parameter NUM_RENAME_PORTS = 2,    // Number of registers to rename per cycle
     parameter NUM_WRITEBACK_PORTS = 2, // Number of freed registers per cycle

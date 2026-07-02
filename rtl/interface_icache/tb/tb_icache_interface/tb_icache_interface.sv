@@ -28,7 +28,7 @@
 `include "colors.vh"
 
 import drac_pkg::*;
-import riscv_pkg::*;
+import riscv_pkg_sarg::*;
 
 module tb_icache_interface();
 

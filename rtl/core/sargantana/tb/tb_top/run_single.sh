@@ -25,7 +25,7 @@ rm -rf lib_module
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog $VLOG_FLAGS +acc=rn +incdir+$DRAC_FOLDER_RTL/ $INCLUDES/riscv_pkg.sv $DRAC_FOLDER_RTL/registers.svh \
+vlog $VLOG_FLAGS +acc=rn +incdir+$DRAC_FOLDER_RTL/ $INCLUDES/riscv_pkg_sarg.sv $DRAC_FOLDER_RTL/registers.svh \
  $INCLUDES/fpuv_pkg.sv $INCLUDES/drac_pkg.sv \
  $INCLUDES/sargantana_icache_pkg.sv $INCLUDES/fpuv_wrapper_pkg.sv $DRAC_FOLDER_RTL/register.sv \
  $IF_STAGE_1/if_stage_1.sv $IF_STAGE_1/bimodal_predictor.sv $IF_STAGE_1/branch_predictor.sv \
@@ -36,7 +36,7 @@ vlog $VLOG_FLAGS +acc=rn +incdir+$DRAC_FOLDER_RTL/ $INCLUDES/riscv_pkg.sv $DRAC_
  $IR_STAGE/fp_free_list.sv $IR_STAGE/fp_rename_table.sv \
  $EXE_STAGE/exe_stage.sv $EXE_STAGE/alu.sv $EXE_STAGE/mul_unit.sv $EXE_STAGE/div_unit.sv $EXE_STAGE/div_4bits.sv \
  $EXE_STAGE/mem_unit.sv $EXE_STAGE/score_board.sv $EXE_STAGE/pending_mem_req_queue.sv $EXE_STAGE/pending_fp_ops_queue.sv \
- $EXE_STAGE/branch_unit.sv $EXE_STAGE/functional_unit.sv $EXE_STAGE/simd_unit.sv \
+ $EXE_STAGE/branch_unit_sarg.sv $EXE_STAGE/functional_unit.sv $EXE_STAGE/simd_unit.sv \
  $EXE_STAGE/vcomp.sv $EXE_STAGE/vshift.sv $EXE_STAGE/vaddsub.sv \
  $FPU_DIR/divsqrt_iter.sv $FPU_DIR/fpu_drac_wrapper.sv $FPU_DIR/fpuv_divsqrt_multi.sv $FPU_DIR/fpuv_lzc.sv \
  $FPU_DIR/fpuv_opgroup_fmt_slice.sv $FPU_DIR/fpuv_rr_arb_tree.sv $FPU_DIR/divsqrt_nrst.sv $FPU_DIR/fpuv_cast_multi.sv\

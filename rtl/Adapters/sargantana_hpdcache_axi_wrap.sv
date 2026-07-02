@@ -1,5 +1,5 @@
 module sargantana_hpdcache_axi_wrap
-import hpdcache_pkg::*;
+import hpdcache_pkg_sarg::*;
 #(
     parameter int unsigned AXI_DATA_WIDTH    = 64,
     parameter type hpdcache_mem_req_t        = logic,
@@ -56,7 +56,7 @@ import hpdcache_pkg::*;
     input  axi_b_chan_t            axi_b_i
 );
 
-    hpdcache_mem_to_axi_read #(
+    hpdcache_mem_to_axi_read_sarg #(
         .AXI_DATA_WIDTH        ( AXI_DATA_WIDTH        ),
         .hpdcache_mem_req_t    ( hpdcache_mem_req_t    ),
         .hpdcache_mem_resp_r_t ( hpdcache_mem_resp_r_t ),
@@ -79,7 +79,7 @@ import hpdcache_pkg::*;
         .axi_r_i        ( axi_r_i               )
     );
 
-    hpdcache_mem_to_axi_write #(
+    hpdcache_mem_to_axi_write_sarg #(
         .AXI_DATA_WIDTH        ( AXI_DATA_WIDTH        ),
         .hpdcache_mem_req_t    ( hpdcache_mem_req_t    ),
         .hpdcache_mem_req_w_t  ( hpdcache_mem_req_w_t  ),

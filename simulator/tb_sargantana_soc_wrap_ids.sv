@@ -29,7 +29,7 @@
 
 module tb_sargantana_soc_wrap_ids;
 
-  import hpdcache_pkg::*;
+  import hpdcache_pkg_sarg::*;
   import test_types_pkg::*;
 
   // ==========================================================================

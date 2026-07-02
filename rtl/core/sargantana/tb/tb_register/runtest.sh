@@ -6,7 +6,7 @@ CYCLES=-all
 rm -rf lib_module
 vlib lib_module
 vmap work $PWD/lib_module
-vlog $VLOG_FLAGS +acc=rn +incdir+ ../../includes/riscv_pkg.sv ../../includes/drac_pkg.sv ../../rtl/register.sv tb_module.sv colors.vh
+vlog $VLOG_FLAGS +acc=rn +incdir+ ../../includes/riscv_pkg_sarg.sv ../../includes/drac_pkg.sv ../../rtl/register.sv tb_module.sv colors.vh
 vmake lib_module/ > Makefile
 
 #vsim work.tb_module -do  "view wave -new" -do "do wave.do" -do "run 20"

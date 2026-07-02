@@ -20,7 +20,7 @@
 
  module exe_stage 
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
     import mmu_pkg::*;
 #(
     parameter drac_pkg::drac_cfg_t DracCfg     = drac_pkg::DracDefaultConfig
@@ -306,7 +306,7 @@ always_comb begin
     end
 end
 
-alu alu_inst (
+alu_sarg alu_inst (
     .instruction_i  (arith_instr),
     .instruction_o  (alu_to_scalar_wb)
 );
@@ -328,7 +328,7 @@ div_unit div_unit_inst (
     .instruction_o  (div_to_scalar_wb)
 );
 
-branch_unit branch_unit_inst (
+branch_unit_sarg branch_unit_inst (
     .instruction_i      (arith_instr),
     .instruction_o      (branch_to_scalar_wb)
 );

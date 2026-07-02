@@ -95,27 +95,27 @@ package def_pkg;
     localparam bit ENABLE_SPIKE_COMMIT_LOG = 1'b1;
 
     // read mask for SSTATUS over MMSTATUS
-    localparam logic [63:0] SMODE_STATUS_READ_MASK = riscv_pkg::SSTATUS_UIE
-                                                   | riscv_pkg::SSTATUS_SIE
-                                                   | riscv_pkg::SSTATUS_SPIE
-                                                   | riscv_pkg::SSTATUS_SPP
-                                                   | riscv_pkg::SSTATUS_FS
-                                                   | riscv_pkg::SSTATUS_VS
-                                                   | riscv_pkg::SSTATUS_XS
-                                                   | riscv_pkg::SSTATUS_SUM
-                                                   | riscv_pkg::SSTATUS_MXR
-                                                   | riscv_pkg::SSTATUS_UPIE
-                                                   | riscv_pkg::SSTATUS_SPIE
-                                                   | riscv_pkg::SSTATUS_UXL
-                                                   | riscv_pkg::SSTATUS64_SD;
+    localparam logic [63:0] SMODE_STATUS_READ_MASK = riscv_pkg_sarg::SSTATUS_UIE
+                                                   | riscv_pkg_sarg::SSTATUS_SIE
+                                                   | riscv_pkg_sarg::SSTATUS_SPIE
+                                                   | riscv_pkg_sarg::SSTATUS_SPP
+                                                   | riscv_pkg_sarg::SSTATUS_FS
+                                                   | riscv_pkg_sarg::SSTATUS_VS
+                                                   | riscv_pkg_sarg::SSTATUS_XS
+                                                   | riscv_pkg_sarg::SSTATUS_SUM
+                                                   | riscv_pkg_sarg::SSTATUS_MXR
+                                                   | riscv_pkg_sarg::SSTATUS_UPIE
+                                                   | riscv_pkg_sarg::SSTATUS_SPIE
+                                                   | riscv_pkg_sarg::SSTATUS_UXL
+                                                   | riscv_pkg_sarg::SSTATUS64_SD;
 
-    localparam logic [63:0] SMODE_STATUS_WRITE_MASK = riscv_pkg::SSTATUS_SIE
-                                                    | riscv_pkg::SSTATUS_SPIE
-                                                    | riscv_pkg::SSTATUS_SPP
-                                                    | riscv_pkg::SSTATUS_FS
-                                                    | riscv_pkg::SSTATUS_VS
-                                                    | riscv_pkg::SSTATUS_SUM
-                                                    | riscv_pkg::SSTATUS_MXR;
+    localparam logic [63:0] SMODE_STATUS_WRITE_MASK = riscv_pkg_sarg::SSTATUS_SIE
+                                                    | riscv_pkg_sarg::SSTATUS_SPIE
+                                                    | riscv_pkg_sarg::SSTATUS_SPP
+                                                    | riscv_pkg_sarg::SSTATUS_FS
+                                                    | riscv_pkg_sarg::SSTATUS_VS
+                                                    | riscv_pkg_sarg::SSTATUS_SUM
+                                                    | riscv_pkg_sarg::SSTATUS_MXR;
     // exception
     typedef struct packed {
          logic [63:0] cause; // cause of exception

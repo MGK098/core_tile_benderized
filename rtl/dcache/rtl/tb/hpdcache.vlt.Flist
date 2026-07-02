@@ -26,9 +26,9 @@
 -F ${HPDCACHE_DIR}/rtl/hpdcache.Flist
 
 #  RAM macros
-${HPDCACHE_DIR}/rtl/src/common/macros/behav/hpdcache_sram_1rw.sv
-${HPDCACHE_DIR}/rtl/src/common/macros/behav/hpdcache_sram_wbyteenable_1rw.sv
-${HPDCACHE_DIR}/rtl/src/common/macros/behav/hpdcache_sram_wmask_1rw.sv
+${HPDCACHE_DIR}/rtl/src/common/macros/behav/hpdcache_sram_sarg_1rw_sarg.sv
+${HPDCACHE_DIR}/rtl/src/common/macros/behav/hpdcache_sram_sarg_wbyteenable_sarg_1rw_sarg.sv
+${HPDCACHE_DIR}/rtl/src/common/macros/behav/hpdcache_sram_sarg_wmask_sarg_1rw_sarg.sv
 
 #  Simulation wrapper for Verilator
 hpdcache_wrapper.sv

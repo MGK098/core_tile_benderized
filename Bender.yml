@@ -33,16 +33,16 @@ sources:
   # =========================================================================
   - rtl/common_cells/src/cf_math_pkg.sv
   - simulator/bsc-dm/common_cells/src/cdc_reset_ctrlr_pkg.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_pkg.sv
-  - rtl/core/sargantana/includes/riscv_pkg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_pkg_sarg.sv
+  - rtl/core/sargantana/includes/riscv_pkg_sarg.sv
   - rtl/core/sargantana/includes/def_pkg.sv
   - rtl/core/sargantana/includes/drac_pkg.sv
   - rtl/core/sargantana/rtl/mmu/includes/mmu_pkg.sv
   - rtl/icache/includes/sargantana_icache_pkg.sv
 
   - rtl/dcache/rtl/src/target/cinco_ranch/cinco_ranch_hpdcache_params_pkg.sv
-  - rtl/dcache/rtl/src/hpdcache_pkg.sv
-  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_pkg.sv
+  - rtl/dcache/rtl/src/hpdcache_pkg_sarg.sv
+  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_pkg_sarg.sv
   - simulator/bsc-dm/rtl/riscv_dm_pkg.sv
   - rtl/Adapters/test_types_pkg.sv
 
@@ -72,25 +72,25 @@ sources:
   # =========================================================================
   # 4. FPNEW (Floating Point Unit)
   # =========================================================================
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/defs_div_sqrt_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/control_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/div_sqrt_top_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/iteration_div_sqrt_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/norm_div_sqrt_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/nrbd_nrsc_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/preprocess_mvp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_cast_multi.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_classifier.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_divsqrt_multi.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_divsqrt_th_32.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_fma.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_fma_multi.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_noncomp.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_block.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_fmt_slice.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_multifmt_slice.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_rounding.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_top.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/defs_div_sqrt_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/control_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/div_sqrt_top_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/iteration_div_sqrt_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/norm_div_sqrt_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/nrbd_nrsc_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_div_sqrt/preprocess_mvp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_cast_multi_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_classifier_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_divsqrt_multi_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_divsqrt_th_32_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_fma_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_fma_multi_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_noncomp_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_block_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_fmt_slice_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_multifmt_slice_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_rounding_sarg.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_top_sarg.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_drac_wrapper.sv
 
   # =========================================================================
@@ -108,7 +108,7 @@ sources:
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/simd/vshift.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/div_unit.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/pending_mem_req_queue.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/alu.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/alu_sarg.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/alu_add.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/alu_shift.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/alu_logic.sv
@@ -119,7 +119,7 @@ sources:
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/zero_counter/alu_count_zeros_LZC32.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/alu/alu_count_pop.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/exe_stage.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/branch_unit.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/branch_unit_sarg.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/simd/functional_unit.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/simd/vcomp.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/simd/vredtree.sv
@@ -142,7 +142,7 @@ sources:
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/simd/vnclip.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/simd/vsmul.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/div_4bits.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/store_buffer.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/store_buffer_sarg.sv
   - rtl/core/sargantana/rtl/datapath/rtl/exe_stage/rtl/vagu.sv
   - rtl/core/sargantana/rtl/datapath/rtl/if_stage_1/rtl/bimodal_predictor.sv
   - rtl/core/sargantana/rtl/datapath/rtl/if_stage_1/rtl/return_address_stack.sv
@@ -154,7 +154,7 @@ sources:
   - rtl/core/sargantana/rtl/datapath/rtl/ir_stage/rtl/rename_table.sv
   - rtl/core/sargantana/rtl/datapath/rtl/if_stage_2/rtl/if_stage_2.sv
   - rtl/core/sargantana/rtl/datapath/rtl/id_stage/rtl/immediate.sv
-  - rtl/core/sargantana/rtl/datapath/rtl/id_stage/rtl/decoder.sv
+  - rtl/core/sargantana/rtl/datapath/rtl/id_stage/rtl/decoder_sarg.sv
   - rtl/core/sargantana/rtl/datapath/rtl/id_stage/rtl/vset_module.sv
   - rtl/core/sargantana/rtl/datapath/rtl/id_stage/rtl/vset_queue.sv
   - rtl/core/sargantana/rtl/datapath/rtl/rr_stage/rtl/regfile.sv
@@ -194,48 +194,48 @@ sources:
   # =========================================================================
   # 8. dCACHE (HPDCache files)
   # =========================================================================
-  - rtl/dcache/rtl/src/common/macros/behav/hpdcache_sram_1rw.sv
-  - rtl/dcache/rtl/src/common/macros/behav/hpdcache_sram_wbyteenable_1rw.sv
-  - rtl/dcache/rtl/src/common/macros/behav/hpdcache_sram_wmask_1rw.sv
-  - rtl/dcache/rtl/src/utils/hpdcache_mem_req_read_arbiter.sv
-  - rtl/dcache/rtl/src/utils/hpdcache_mem_req_write_arbiter.sv
-  - rtl/dcache/rtl/src/common/hpdcache_demux.sv
-  - rtl/dcache/rtl/src/common/hpdcache_lfsr.sv
-  - rtl/dcache/rtl/src/common/hpdcache_sync_buffer.sv
-  - rtl/dcache/rtl/src/common/hpdcache_fifo_reg.sv
-  - rtl/dcache/rtl/src/common/hpdcache_fifo_reg_initialized.sv
-  - rtl/dcache/rtl/src/common/hpdcache_fxarb.sv
-  - rtl/dcache/rtl/src/common/hpdcache_rrarb.sv
-  - rtl/dcache/rtl/src/common/hpdcache_mux.sv
-  - rtl/dcache/rtl/src/common/hpdcache_decoder.sv
-  - rtl/dcache/rtl/src/common/hpdcache_1hot_to_binary.sv
-  - rtl/dcache/rtl/src/common/hpdcache_prio_1hot_encoder.sv
-  - rtl/dcache/rtl/src/common/hpdcache_sram.sv
-  - rtl/dcache/rtl/src/common/hpdcache_sram_wbyteenable.sv
-  - rtl/dcache/rtl/src/common/hpdcache_sram_wmask.sv
-  - rtl/dcache/rtl/src/common/hpdcache_regbank_wbyteenable_1rw.sv
-  - rtl/dcache/rtl/src/common/hpdcache_regbank_wmask_1rw.sv
-  - rtl/dcache/rtl/src/common/hpdcache_data_downsize.sv
-  - rtl/dcache/rtl/src/common/hpdcache_data_upsize.sv
-  - rtl/dcache/rtl/src/common/hpdcache_data_resize.sv
-  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride.sv
-  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_arb.sv
-  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_wrapper.sv
-  - rtl/dcache/rtl/src/hpdcache.sv
-  - rtl/dcache/rtl/src/hpdcache_amo.sv
-  - rtl/dcache/rtl/src/hpdcache_cmo.sv
-  - rtl/dcache/rtl/src/hpdcache_core_arbiter.sv
-  - rtl/dcache/rtl/src/hpdcache_ctrl.sv
-  - rtl/dcache/rtl/src/hpdcache_ctrl_pe.sv
-  - rtl/dcache/rtl/src/hpdcache_memctrl.sv
-  - rtl/dcache/rtl/src/hpdcache_miss_handler.sv
-  - rtl/dcache/rtl/src/hpdcache_mshr.sv
-  - rtl/dcache/rtl/src/hpdcache_rtab.sv
-  - rtl/dcache/rtl/src/hpdcache_uncached.sv
-  - rtl/dcache/rtl/src/hpdcache_victim_plru.sv
-  - rtl/dcache/rtl/src/hpdcache_victim_random.sv
-  - rtl/dcache/rtl/src/hpdcache_victim_sel.sv
-  - rtl/dcache/rtl/src/hpdcache_wbuf.sv
+  - rtl/dcache/rtl/src/common/macros/behav/hpdcache_sram_1rw_sarg.sv
+  - rtl/dcache/rtl/src/common/macros/behav/hpdcache_sram_wbyteenable_1rw_sarg.sv
+  - rtl/dcache/rtl/src/common/macros/behav/hpdcache_sram_wmask_1rw_sarg.sv
+  - rtl/dcache/rtl/src/utils/hpdcache_mem_req_read_arbiter_sarg.sv
+  - rtl/dcache/rtl/src/utils/hpdcache_mem_req_write_arbiter_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_demux_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_lfsr_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_sync_buffer_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_fifo_reg_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_fifo_reg_initialized_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_fxarb_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_rrarb_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_mux_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_decoder_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_1hot_to_binary_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_prio_1hot_encoder_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_sram_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_sram_wbyteenable_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_sram_wmask_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_regbank_wbyteenable_1rw_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_regbank_wmask_1rw_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_data_downsize_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_data_upsize_sarg.sv
+  - rtl/dcache/rtl/src/common/hpdcache_data_resize_sarg.sv
+  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_sarg.sv
+  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_arb_sarg.sv
+  - rtl/dcache/rtl/src/hwpf_stride/hwpf_stride_wrapper_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_amo_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_cmo_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_core_arbiter_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_ctrl_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_ctrl_pe_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_memctrl_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_miss_handler_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_mshr_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_rtab_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_uncached_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_victim_plru_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_victim_random_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_victim_sel_sarg.sv
+  - rtl/dcache/rtl/src/hpdcache_wbuf_sarg.sv
 
   # =========================================================================
   # 9. TOP LEVEL (Tile, Adapters, Interfaces)
@@ -246,8 +246,8 @@ sources:
   - rtl/core/sargantana/rtl/mmu/rtl/dcache_adapters/bsc_mmu_hpdc_adapter.sv
   - rtl/sargantana_subtile.sv
   - rtl/top_tile.sv
-  - rtl/Adapters/hpdcache_mem_to_axi_read.sv
-  - rtl/Adapters/hpdcache_mem_to_axi_write.sv
+  - rtl/Adapters/hpdcache_mem_to_axi_read_sarg.sv
+  - rtl/Adapters/hpdcache_mem_to_axi_write_sarg.sv
   - rtl/Adapters/sargantana_hpdcache_axi_wrap.sv
   - rtl/Adapters/sargantana_icache_axi_wrap.sv
   - rtl/Adapters/sargantana_ucache_axi_wrap.sv
@@ -275,7 +275,6 @@ sources:
       - simulator/models/hdl/konata_behav.sv
       - simulator/models/hdl/l2_behav.sv
       - simulator/models/hdl/rename_checking_behav.sv
-      - simulator/models/hdl/commit_log_behav.sv
       - simulator/tb_sargantana_soc_wrap_F.sv
       - simulator/tb_sargantana_soc_wrap_ids.sv
       - simulator/tb_sargantana_soc_axi_wrap.sv

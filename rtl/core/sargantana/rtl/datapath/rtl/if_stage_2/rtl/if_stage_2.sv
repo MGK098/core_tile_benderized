@@ -21,7 +21,7 @@
 
 module if_stage_2
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input logic                 clk_i,
     input logic                 rstn_i,

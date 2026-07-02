@@ -31,10 +31,10 @@ while read p; do
   #grep for warnings and errors and save it on a variable. Notice that sterr is 
   #required
   echo -e "$GREEN $p $NC"
-  #(/home/bscuser/programs/scripts/runLintSV.sh   includes/riscv_pkg.sv includes/drac_pkg.sv "$p"| grep 'warning\|error')2>&1 | tee -a $artifact 
+  #(/home/bscuser/programs/scripts/runLintSV.sh   includes/riscv_pkg_sarg.sv includes/drac_pkg.sv "$p"| grep 'warning\|error')2>&1 | tee -a $artifact 
 done <<< "$rtl_files"
 
-$TOP/scripts/remote_spy.sh includes/riscv_pkg.sv includes/drac_pkg.sv $rtl_files
+$TOP/scripts/remote_spy.sh includes/riscv_pkg_sarg.sv includes/drac_pkg.sv $rtl_files
 #Stores previous return value, inverted.
 rval="$?"
 cat ~/.ssh/*.pub 

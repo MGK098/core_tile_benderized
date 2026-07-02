@@ -6,7 +6,7 @@
  */
 
  module drac_openpiton_wrapper
- import drac_pkg::*; import hpdcache_pkg::*; import wt_cache_pkg::*;
+ import drac_pkg::*; import hpdcache_pkg_sarg::*; import wt_cache_pkg::*;
  #(
     // IO addresses
     parameter int unsigned               NIOSections           =  1,

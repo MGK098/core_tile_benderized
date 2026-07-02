@@ -64,7 +64,7 @@ reg[64*8:0] tb_test_name;
 // Module
 //-----------------------------
 
-branch_unit module_inst (
+branch_unit_sarg module_inst (
     .instruction_i(tb_instr_i),
     .data_rs1_i(tb_data_rs1_i),
     .data_rs2_i(tb_data_rs2_i),

@@ -20,7 +20,7 @@
 
 module vset_module
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input logic                     clk_i,            // Clock Singal
     input logic                     rstn_i,           // Negated Reset Signal
@@ -63,10 +63,10 @@ always_comb begin : vsetvl_ctrl
     vnarrow_wide_en_d = 1'b1;
     
     case(vtype_i[2:0])
-        3'b101:  vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_i[5:3]) >> 3;
-        3'b110:  vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_i[5:3]) >> 2;
-        3'b111:  vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_i[5:3]) >> 1;
-        default: vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_i[5:3]);
+        3'b101:  vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_i[5:3]) >> 3;
+        3'b110:  vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_i[5:3]) >> 2;
+        3'b111:  vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_i[5:3]) >> 1;
+        default: vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_i[5:3]);
     endcase
 
     if (is_vset_i) begin

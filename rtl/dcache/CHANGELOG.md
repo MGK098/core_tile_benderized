@@ -157,7 +157,7 @@ The major modification in this release is the new scheme to set parameters of th
 
 ### Changed
 
-- Split the hpdcache_pkg into: (1) the hpdcache_pkg contains internally defined
+- Split the hpdcache_pkg_sarg into: (1) the hpdcache_pkg_sarg contains internally defined
   parameters; (2) a new hpdcache_params_pkg that defines user parameters
 - New selection policy of ready requests in the replay table. It gives priority
   to requests in the same linked list.

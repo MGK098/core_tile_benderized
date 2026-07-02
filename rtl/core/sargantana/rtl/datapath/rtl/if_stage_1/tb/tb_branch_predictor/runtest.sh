@@ -8,7 +8,7 @@ BASE_DIR="../../../../../.."
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog $VLOG_FLAGS +acc=rn +incdir+ ${BASE_DIR}/includes/riscv_pkg.sv ${BASE_DIR}/includes/drac_pkg.sv \
+vlog $VLOG_FLAGS +acc=rn +incdir+ ${BASE_DIR}/includes/riscv_pkg_sarg.sv ${BASE_DIR}/includes/drac_pkg.sv \
       ../../rtl/bimodal_predictor.sv ../../rtl/branch_predictor.sv \
       tb_module.sv colors.vh
 vmake lib_module/ > Makefile

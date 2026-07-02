@@ -20,7 +20,7 @@
 
 module return_address_stack
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input   logic      rstn_i,                        // Negative reset input signal
     input   logic      clk_i,                         // Clock input signal

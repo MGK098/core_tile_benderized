@@ -19,7 +19,7 @@
  */
 
 import drac_pkg::*;
-import riscv_pkg::*;
+import riscv_pkg_sarg::*;
 
 `ifdef FPGA
 (* use_dsp = "yes" *) module vmul (

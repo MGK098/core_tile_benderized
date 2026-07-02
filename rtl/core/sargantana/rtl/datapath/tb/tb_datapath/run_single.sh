@@ -26,12 +26,12 @@ rm -rf lib_module
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog $VLOG_FLAGS +acc=rn +incdir+ $INCLUDES/riscv_pkg.sv $INCLUDES/drac_pkg.sv $DRAC_FOLDER_RTL/register.sv\
+vlog $VLOG_FLAGS +acc=rn +incdir+ $INCLUDES/riscv_pkg_sarg.sv $INCLUDES/drac_pkg.sv $DRAC_FOLDER_RTL/register.sv\
  $IF_STAGE/if_stage.sv $IF_STAGE/bimodal_predictor.sv $IF_STAGE/branch_predictor.sv $ID_STAGE/decoder.sv $ID_STAGE/immediate.sv $RR_STAGE/regfile.sv \
  $IR_STAGE/instruction_queue.sv $IR_STAGE/free_list.sv $IR_STAGE/rename_table.sv $EXE_STAGE/load_store_queue.sv\
  $EXE_STAGE/exe_stage.sv $EXE_STAGE/alu.sv  $EXE_STAGE/mul_unit.sv $EXE_STAGE/div_unit.sv $EXE_STAGE/div_4bits.sv\
  $EXE_STAGE/mem_unit.sv $EXE_STAGE/score_board.sv\
- $EXE_STAGE/branch_unit.sv $DCACHE/dcache_interface.sv $CONTROL/control_unit.sv $CSR_INTERFACE/csr_interface.sv $WB_STAGE/graduation_list.sv\
+ $EXE_STAGE/branch_unit_sarg.sv $DCACHE/dcache_interface.sv $CONTROL/control_unit.sv $CSR_INTERFACE/csr_interface.sv $WB_STAGE/graduation_list.sv\
  $DATAPATH/datapath.sv tb_datapath.sv perfect_memory.sv perfect_memory_hex.sv colors.vh 
 
 vmake lib_module/ > Makefile_test

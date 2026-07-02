@@ -13,7 +13,7 @@ rm -rf lib_module
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog $VLOG_FLAGS +acc=rn +incdir+ $INCLUDES/riscv_pkg.sv $INCLUDES/drac_pkg.sv\
+vlog $VLOG_FLAGS +acc=rn +incdir+ $INCLUDES/riscv_pkg_sarg.sv $INCLUDES/drac_pkg.sv\
  $IF_STAGE/if_stage.sv  $IF_STAGE/branch_predictor.sv $IF_STAGE/bimodal_predictor.sv \
  tb_if_stage.sv colors.vh
 vmake lib_module/ > Makefile

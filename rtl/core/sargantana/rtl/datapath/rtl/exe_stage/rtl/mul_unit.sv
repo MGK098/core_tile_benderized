@@ -20,7 +20,7 @@
 
 module mul_unit 
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input  logic                   clk_i,          // Clock Signal
     input  logic                   rstn_i,         // Negative reset signal

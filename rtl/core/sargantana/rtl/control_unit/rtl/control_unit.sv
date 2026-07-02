@@ -20,7 +20,7 @@
 
 module control_unit
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input logic             rstn_i,
     input logic             clk_i,

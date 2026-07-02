@@ -20,7 +20,7 @@
 
 module alu_count_pop
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input bus64_t data_rs1_i,
     output bus64_t result_o

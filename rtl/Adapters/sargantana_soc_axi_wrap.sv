@@ -6,7 +6,7 @@ module sargantana_soc_axi_wrap
   import drac_pkg::*;
   import sargantana_icache_pkg::*;
   import mmu_pkg::*;
-  import hpdcache_pkg::*;
+  import hpdcache_pkg_sarg::*;
   import test_types_pkg::*;
 #(
   // Core Parameters

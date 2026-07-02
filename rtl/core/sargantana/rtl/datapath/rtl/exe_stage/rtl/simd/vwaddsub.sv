@@ -20,7 +20,7 @@
 
 module vwaddsub 
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input instr_type_t          instr_type_i,   // Instruction type
     input sew_t                 sew_i,          // Element width

@@ -19,7 +19,7 @@
  */
 package drac_pkg;
 
-import riscv_pkg::*;
+import riscv_pkg_sarg::*;
 
 // Address size
 `ifdef MEEP_SHELL
@@ -41,8 +41,8 @@ parameter ICACHE_VPN_BITS_SIZE = PHY_VIRT_MAX_ADDR_SIZE - ICACHE_IDX_BITS_SIZE;
 
 parameter ICACHELINE_SIZE = 512;
 parameter DATA_SIZE = 64;
-parameter VELEMENTS = riscv_pkg::VLEN/DATA_SIZE;
-parameter logic [6:0] VMAXELEM = riscv_pkg::VLEN/8;
+parameter VELEMENTS = riscv_pkg_sarg::VLEN/DATA_SIZE;
+parameter logic [6:0] VMAXELEM = riscv_pkg_sarg::VLEN/8;
 parameter VMAXELEM_LOG = $clog2(VMAXELEM);
 // TODO (Arnau): I don't think this is the best way of implementing this, but
 //               making it fully parametrizable would introduce a *lot* of changes...
@@ -72,10 +72,10 @@ parameter VTYPE_LENGTH = 8;
 //parameter OPCODE_WIDTH = 6;
 //parameter REG_WIDTH = 5;
 
-typedef reg   [riscv_pkg::VLEN-1:0] reg_simd_t;
+typedef reg   [riscv_pkg_sarg::VLEN-1:0] reg_simd_t;
 typedef reg   [63:0]  reg64_t;
-typedef logic [riscv_pkg::VLEN-1:0] bus_simd_t;
-typedef logic [(riscv_pkg::VLEN/8)-1:0] bus_mask_t;
+typedef logic [riscv_pkg_sarg::VLEN-1:0] bus_simd_t;
+typedef logic [(riscv_pkg_sarg::VLEN/8)-1:0] bus_mask_t;
 typedef logic [DCACHE_BUS_WIDTH-1:0] bus_dcache_data_t;
 typedef logic [127:0] bus128_t;
 typedef logic [63:0]  bus64_t;
@@ -83,8 +83,8 @@ typedef logic [31:0]  bus32_t;
 
 typedef logic [REGFILE_WIDTH-1:0] reg_t;
 typedef logic [VREGFILE_WIDTH-1:0] vreg_t;
-typedef reg   [riscv_pkg::XLEN-1:0] regPC_t;
-typedef logic [riscv_pkg::XLEN-1:0] addrPC_t;
+typedef reg   [riscv_pkg_sarg::XLEN-1:0] regPC_t;
+typedef logic [riscv_pkg_sarg::XLEN-1:0] addrPC_t;
 typedef logic [PHY_VIRT_MAX_ADDR_SIZE-1:0] addr_t;
 typedef logic [PHY_ADDR_SIZE-1:0] phy_addr_t;
 typedef reg   [PHY_VIRT_MAX_ADDR_SIZE-1:0] reg_addr_t;
@@ -93,7 +93,7 @@ typedef reg   [CSR_ADDR_SIZE-1:0] reg_csr_addr_t;
 //typedef logic [CSR_CMD_SIZE-1:0] csr_cmd_t;
 //typedef reg   [CSR_CMD_SIZE-1:0] reg_csr_cmd_t;
 
-typedef logic [riscv_pkg::INST_SIZE-1:0] inst_t;
+typedef logic [riscv_pkg_sarg::INST_SIZE-1:0] inst_t;
 typedef logic [ICACHELINE_SIZE-1:0] icache_line_t;
 typedef reg   [ICACHELINE_SIZE-1:0] icache_line_reg_t;
 typedef logic [ICACHE_IDX_BITS_SIZE-1:0] icache_idx_t;
@@ -262,7 +262,7 @@ typedef struct packed {
 } branch_pred_t;            // Struct for Branch Prediction
 
 typedef struct packed {
-    riscv_pkg::exception_cause_t cause; // Cause of exception vector 64 bits
+    riscv_pkg_sarg::exception_cause_t cause; // Cause of exception vector 64 bits
     bus64_t origin; // Addr or PC generating exception
     logic valid;    // There is an eception
 } exception_t;      // Struct contains exceptions
@@ -446,7 +446,7 @@ typedef struct packed {
 // Fetch 2 Stage
 typedef struct packed {
     addrPC_t                 pc_inst;   // Actual PC
-    riscv_pkg::instruction_t inst;      // Bits of the instruction
+    riscv_pkg_sarg::instruction_t inst;      // Bits of the instruction
     logic                    valid;     // Valid instruction
     branch_pred_t            bpred;     // Branch prediction
     exception_t              ex;        // Exceptions
@@ -490,7 +490,7 @@ typedef struct packed {
     logic use_fs1;                      // Instruction uses fregister source 1
     logic use_fs2;                      // Instruction uses fregister source 2
     logic use_fs3;                      // Instruction uses fregister source 2
-    riscv_pkg::op_frm_fp_t frm;         // FP rounding mode
+    riscv_pkg_sarg::op_frm_fp_t frm;         // FP rounding mode
 
     logic use_imm;                      // Use Immediate later
     logic use_pc;                       // Use PC later
@@ -511,7 +511,7 @@ typedef struct packed {
     logic stall_vset_fence;             // VSET fence
     mem_type_t mem_type;                // Mem instruction type
     `ifdef SIM_COMMIT_LOG
-    riscv_pkg::instruction_t inst;
+    riscv_pkg_sarg::instruction_t inst;
     bus64_t id;
     `elsif SIM_KONATA_DUMP
     bus64_t id;
@@ -770,7 +770,7 @@ typedef struct packed {
     sew_t           sew;                         // Instruction SEW
     logic [2:0] lmul;                   // Instruction LMUL
     `ifdef SIM_COMMIT_LOG
-    riscv_pkg::instruction_t inst;
+    riscv_pkg_sarg::instruction_t inst;
     bus64_t id;
     addr_t addr;
     `elsif SIM_KONATA_DUMP
@@ -808,7 +808,7 @@ typedef struct packed {
     bus64_t id;
     `endif
     `ifdef SIM_COMMIT_LOG
-    riscv_pkg::instruction_t inst;
+    riscv_pkg_sarg::instruction_t inst;
     addr_t addr;
     `endif
     phvreg_t pvd;                       // Physical vregister destination
@@ -839,7 +839,7 @@ typedef struct packed {
     bus64_t id;
     `endif
     `ifdef SIM_COMMIT_LOG
-    riscv_pkg::instruction_t inst;
+    riscv_pkg_sarg::instruction_t inst;
     addr_t addr;
     `endif
     phreg_t fprd;                       // Physical register destination
@@ -1218,7 +1218,7 @@ typedef struct packed {
     sew_t           sew;                         // Instruction SEW
     logic [2:0]     lmul;                   // Instruction LMUL
     `ifdef SIM_COMMIT_LOG
-    riscv_pkg::instruction_t inst;
+    riscv_pkg_sarg::instruction_t inst;
     `endif
     `ifdef SIM_KONATA_DUMP
     bus64_t id;
@@ -1396,7 +1396,7 @@ typedef struct packed {
     longint unsigned reg_wr_valid;
     longint unsigned freg_wr_valid;
     longint unsigned vreg_wr_valid;
-    bit[riscv_pkg::VLEN-1:0] data;
+    bit[riscv_pkg_sarg::VLEN-1:0] data;
     longint unsigned csr_wr_valid;
     longint unsigned csr_dst;
     longint unsigned csr_data;

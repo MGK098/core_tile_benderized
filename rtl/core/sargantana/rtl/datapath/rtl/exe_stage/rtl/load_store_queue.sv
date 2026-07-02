@@ -19,7 +19,7 @@
  */
 
 module load_store_queue
-    import drac_pkg::*, riscv_pkg::*, mmu_pkg::*;
+    import drac_pkg::*, riscv_pkg_sarg::*, mmu_pkg::*;
 #(
     parameter drac_pkg::drac_cfg_t DracCfg     = drac_pkg::DracDefaultConfig
 )(
@@ -345,7 +345,7 @@ assign is_next_store = (num_to_exe > '0) && ((control_table[head].instr.mem_type
 assign pmu_load_after_store_o = st_buff_collision;
 
 
-store_buffer store_buffer_inst(
+store_buffer_sarg store_buffer_inst(
     .clk_i(clk_i),  
     .rstn_i(rstn_i),
     .write_enable_i(sb_write_enable),

@@ -20,7 +20,7 @@
 
 module datapath
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
     import mmu_pkg::*;
 #(
     parameter drac_pkg::drac_cfg_t DracCfg     = drac_pkg::DracDefaultConfig
@@ -457,7 +457,7 @@ endfunction
     logic full_vset_queue_int, exception_enable;
     logic [VMAXELEM_LOG:0] vl_id_exe;
     // ID Stage
-    decoder id_decode_inst(
+    decoder_sarg id_decode_inst(
         .clk_i          (clk_i),
         .rstn_i         (rstn_i),
         .stall_i        (control_int.stall_id),
@@ -1741,13 +1741,13 @@ assign debug_reg_o.rnm_read_resp = stage_no_stall_rr_q.prs1;
     localparam NR_COMMIT_PORTS = 2;
 
     logic                                             piton_pc_vld;
-    logic [riscv_pkg::XLEN-1:0]                       piton_pc;
-    logic [NR_COMMIT_PORTS-1:0][riscv_pkg::XLEN-1:0]  pc_data;
+    logic [riscv_pkg_sarg::XLEN-1:0]                       piton_pc;
+    logic [NR_COMMIT_PORTS-1:0][riscv_pkg_sarg::XLEN-1:0]  pc_data;
     logic [NR_COMMIT_PORTS-1:0]                       pc_pop, pc_empty;
 
     for (genvar i = 0; i < NR_COMMIT_PORTS; i++) begin : gen_pc_fifo
       fifo_v3 #(
-        .DATA_WIDTH(riscv_pkg::XLEN),
+        .DATA_WIDTH(riscv_pkg_sarg::XLEN),
         .DEPTH(PC_QUEUE_DEPTH))
       i_pc_fifo (
         .clk_i      ( clk_i                                               ),
@@ -1767,7 +1767,7 @@ assign debug_reg_o.rnm_read_resp = stage_no_stall_rr_q.prs1;
 
     rr_arb_tree #(
       .NumIn(NR_COMMIT_PORTS),
-      .DataWidth(riscv_pkg::XLEN))
+      .DataWidth(riscv_pkg_sarg::XLEN))
     i_rr_arb_tree (
       .clk_i   ( clk_i        ),
       .rst_ni  ( rstn_i       ),

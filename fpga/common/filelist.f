@@ -159,8 +159,8 @@ rtl/axi_riscv_atomics/src/axi_riscv_atomics_structs.sv
 includes/fpga_pkg.sv
 
 // HPDC AXI Adapters
-../../rtl/dcache/rtl/src/utils/hpdcache_mem_to_axi_read.sv
-../../rtl/dcache/rtl/src/utils/hpdcache_mem_to_axi_write.sv
+../../rtl/dcache/rtl/src/utils/hpdcache_mem_to_axi_read_sarg.sv
+../../rtl/dcache/rtl/src/utils/hpdcache_mem_to_axi_write_sarg.sv
 
 // Common FPGA Modules
 rtl/axi_arbiter.sv

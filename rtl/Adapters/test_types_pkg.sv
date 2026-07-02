@@ -6,7 +6,7 @@
 //   MemDataWidth = 64
 
 package test_types_pkg;
-    import hpdcache_pkg::*;
+    import hpdcache_pkg_sarg::*;
     import drac_pkg::*;
 
     // ----------------------------------------------------------------

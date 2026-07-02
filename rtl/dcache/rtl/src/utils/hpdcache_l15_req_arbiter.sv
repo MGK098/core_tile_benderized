@@ -23,7 +23,7 @@
  *  Description   : Dcache Memory Req Channels Arbiter
  *  History       :
  */
-module hpdcache_l15_req_arbiter import hpdcache_pkg::*;
+module hpdcache_l15_req_arbiter import hpdcache_pkg_sarg::*;
 //  Parameters
 //  {{{
 #(
@@ -95,9 +95,9 @@ module hpdcache_l15_req_arbiter import hpdcache_pkg::*;
     endgenerate
 
     //  Fixed-priority arbiter
-    hpdcache_fxarb #(
+    hpdcache_fxarb_sarg #(
         .N                   (N)
-    ) hpdcache_fxarb_mem_req_i (
+    ) hpdcache_fxarb_sarg_mem_req_i (
         .clk_i,
         .rst_ni,
         .req_i               (mem_arb_req_valid),
@@ -193,7 +193,7 @@ module hpdcache_l15_req_arbiter import hpdcache_pkg::*;
     endgenerate
 
     //Data, request and port selected
-    hpdcache_mux #(
+    hpdcache_mux_sarg #(
         .NINPUT              (N),
         .DATA_WIDTH          ($bits(req_portid_t)),
         .ONE_HOT_SEL         (1'b1)
@@ -203,7 +203,7 @@ module hpdcache_l15_req_arbiter import hpdcache_pkg::*;
         .data_o              (mem_req_pid_o)
     );
 
-    hpdcache_mux #(
+    hpdcache_mux_sarg #(
         .NINPUT              (N),
         .DATA_WIDTH          ($bits(hpdcache_mem_req_t)),
         .ONE_HOT_SEL         (1'b1)
@@ -213,7 +213,7 @@ module hpdcache_l15_req_arbiter import hpdcache_pkg::*;
         .data_o              (mem_req_o)
     );
 
-    hpdcache_mux #(
+    hpdcache_mux_sarg #(
         .NINPUT              (N),
         .DATA_WIDTH          ($bits(hpdcache_mem_req_w_t)),
         .ONE_HOT_SEL         (1'b1)

@@ -24,7 +24,7 @@
   */
 module bimodal_predictor
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input   logic       clk_i,                         // Clock input signal
     input   logic       rstn_i,                        // reset input signal

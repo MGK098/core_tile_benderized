@@ -27,7 +27,7 @@
 `include "l15.tmp.h"
 `include "define.tmp.h"
 
-module hpdcache_to_l15 import hpdcache_pkg::*; import wt_cache_pkg::*;
+module hpdcache_to_l15 import hpdcache_pkg_sarg::*; import wt_cache_pkg::*;
 //  Parameters
 //  {{{
 #(
@@ -195,7 +195,7 @@ module hpdcache_to_l15 import hpdcache_pkg::*; import wt_cache_pkg::*;
     logic                                       req_ready;
     // Size of the unc. store request. Its compulsory to replicate the data of the request according to its size.
     hpdcache_mem_addr_t                         req_wt_address; 
-    hpdcache_pkg::hpdcache_mem_size_t           req_wt_size;
+    hpdcache_pkg_sarg::hpdcache_mem_size_t           req_wt_size;
     //logic [2:0]                                 req_wt_offset;
     localparam 
        WORD_NUM     = HPDcacheMemDataWidth/`L15_REQ_DATA_WIDTH,
@@ -419,7 +419,7 @@ module hpdcache_to_l15 import hpdcache_pkg::*; import wt_cache_pkg::*;
         end
     end
 
-    hpdcache_fifo_reg_initialized #(
+    hpdcache_fifo_reg_sarg_initialized_sarg #(
             .FIFO_DEPTH  (NUM_THREAD_IDS),
             .fifo_data_t (free_thid_t)
     ) i_free_threadid_fifo (

@@ -28,7 +28,7 @@
  */
 module branch_predictor
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input wire           clk_i,                         // Clock input signal
     input wire           rstn_i,                        // Reset negate input signal

@@ -20,7 +20,7 @@
 
 module immediate
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 (
     input instruction_t instr_i,
     output bus64_t imm_o
@@ -60,14 +60,14 @@ module immediate
 
     always_comb begin
         case (instr_i.common.opcode)
-            riscv_pkg::OP_LUI,
-            riscv_pkg::OP_AUIPC: begin
+            riscv_pkg_sarg::OP_LUI,
+            riscv_pkg_sarg::OP_AUIPC: begin
                 imm_o = {sign_extended,imm_utype};
             end
-            riscv_pkg::OP_JAL: begin
+            riscv_pkg_sarg::OP_JAL: begin
                 imm_o = {sign_extended,imm_jtype};
             end
-            riscv_pkg::OP_LOAD_FP: begin
+            riscv_pkg_sarg::OP_LOAD_FP: begin
                 case (instr_i.stype.func3)
                     F3_FLW,
                     F3_FLD: begin
@@ -78,11 +78,11 @@ module immediate
                     end
                 endcase
             end
-            riscv_pkg::OP_JALR,
-            riscv_pkg::OP_LOAD: begin
+            riscv_pkg_sarg::OP_JALR,
+            riscv_pkg_sarg::OP_LOAD: begin
                 imm_o = {sign_extended,imm_itype};
             end
-            riscv_pkg::OP_ALU_I: begin
+            riscv_pkg_sarg::OP_ALU_I: begin
                 case (instr_i.common.func3)
                     F3_SLLI,
                     F3_SRLAI: begin
@@ -93,7 +93,7 @@ module immediate
                     end
                 endcase
             end
-            riscv_pkg::OP_ALU_I_W: begin
+            riscv_pkg_sarg::OP_ALU_I_W: begin
                 case (instr_i.common.func3)
                     F3_64_SLLIW,
                     F3_64_SRLIW_SRAIW: begin
@@ -104,10 +104,10 @@ module immediate
                     end
                 endcase
             end
-            riscv_pkg::OP_BRANCH: begin
+            riscv_pkg_sarg::OP_BRANCH: begin
                 imm_o = {sign_extended,imm_btype};
             end
-            riscv_pkg::OP_STORE_FP: begin
+            riscv_pkg_sarg::OP_STORE_FP: begin
                 case (instr_i.stype.func3)
                     F3_FLW,
                     F3_FLD: begin
@@ -118,10 +118,10 @@ module immediate
                     end
                 endcase
             end
-            riscv_pkg::OP_STORE: begin
+            riscv_pkg_sarg::OP_STORE: begin
                 imm_o = {sign_extended,imm_stype};
             end
-            riscv_pkg::OP_V: begin
+            riscv_pkg_sarg::OP_V: begin
                 case (instr_i.itype.func3)
                     F3_OPIVI: begin
                         case (instr_i.vtype.func6)
@@ -141,7 +141,7 @@ module immediate
                     end
                 endcase
             end
-            riscv_pkg::OP_SYSTEM: begin
+            riscv_pkg_sarg::OP_SYSTEM: begin
                 // we could filter here for only the important CSR
                 case (instr_i.itype.func3)
                     F3_CSRRW,

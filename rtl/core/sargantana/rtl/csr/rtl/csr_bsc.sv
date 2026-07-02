@@ -130,7 +130,7 @@ module csr_bsc#(
     output logic                            debug_step_o
 );
 
-    localparam int MHPM_TO_HPM_DIST = riscv_pkg::CSR_HPM_COUNTER_3 - riscv_pkg::CSR_MHPM_COUNTER_3;
+    localparam int MHPM_TO_HPM_DIST = riscv_pkg_sarg::CSR_HPM_COUNTER_3 - riscv_pkg_sarg::CSR_MHPM_COUNTER_3;
 
     function [1:0] trunc_sum_2bits(input [2:0] val_in);
         trunc_sum_2bits = val_in[1:0];
@@ -152,11 +152,11 @@ module csr_bsc#(
     // Registers declaration
     //////////////////////////////////////////////
     
-    riscv_pkg::status_rv64_t  mstatus_q,  mstatus_d;
-    riscv_pkg::satp_t         satp_q, satp_d;
-    riscv_pkg::csr_t  csr_addr;
+    riscv_pkg_sarg::status_rv64_t  mstatus_q,  mstatus_d;
+    riscv_pkg_sarg::satp_t         satp_q, satp_d;
+    riscv_pkg_sarg::csr_t  csr_addr;
     // privilege level register
-    riscv_pkg::priv_lvl_t   priv_lvl_d, priv_lvl_q;
+    riscv_pkg_sarg::priv_lvl_t   priv_lvl_d, priv_lvl_q;
 
     logic        mtvec_rst_load_q;// used to determine whether we came out of reset
     logic [63:0] mtvec_q,     mtvec_d;
@@ -188,15 +188,15 @@ module csr_bsc#(
     logic [63:0] instret_q,   instret_d;
     logic [31:0] scountovf_q, scountovf_d;
 
-    riscv_pkg::dcsr_t dcsr_q, dcsr_d;
+    riscv_pkg_sarg::dcsr_t dcsr_q, dcsr_d;
     logic [63:0] dpc_q, dpc_d;
     logic [63:0] dscratch0_q, dscratch0_d;
     logic [63:0] dscratch1_q, dscratch1_d;
     logic debug_mode_en_q, debug_mode_en_d;
     logic debug_ebreak_q, debug_ebreak_d;
 
-    riscv_pkg::fcsr_t fcsr_q, fcsr_d;
-    riscv_pkg::vcsr_t vcsr_q, vcsr_d;
+    riscv_pkg_sarg::fcsr_t fcsr_q, fcsr_d;
+    riscv_pkg_sarg::vcsr_t vcsr_q, vcsr_d;
 
     //////////////////////////////////////////////
     // Intermidiet wires and regs declaration
@@ -210,7 +210,7 @@ module csr_bsc#(
     logic [63:0] ex_tval;
     logic [63:0] csr_wdata, csr_rdata;
     logic [63:0] trap_vector_base;
-    riscv_pkg::priv_lvl_t   trap_to_priv_lvl;
+    riscv_pkg_sarg::priv_lvl_t   trap_to_priv_lvl;
     // register for enabling load store address translation, this is critical, hence the register
     logic        en_ld_st_translation_d, en_ld_st_translation_q;
     logic  mprv;
@@ -288,7 +288,7 @@ module csr_bsc#(
     // ----------------
     // Assignments
     // ----------------
-    assign csr_addr = riscv_pkg::csr_t'(rw_addr_i);
+    assign csr_addr = riscv_pkg_sarg::csr_t'(rw_addr_i);
 
     // ----------------
     // HPM Assignments
@@ -313,37 +313,37 @@ module csr_bsc#(
 
         if (csr_read) begin
             unique case (csr_addr.address)
-                riscv_pkg::CSR_FFLAGS: begin
-                    if (mstatus_q.fs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_FFLAGS: begin
+                    if (mstatus_q.fs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {59'b0, fcsr_q.fflags};
                     end
                 end
-                riscv_pkg::CSR_FRM: begin
-                    if (mstatus_q.fs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_FRM: begin
+                    if (mstatus_q.fs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {61'b0, fcsr_q.frm};
                     end
                 end
-                riscv_pkg::CSR_FCSR: begin
-                    if (mstatus_q.fs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_FCSR: begin
+                    if (mstatus_q.fs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {56'b0, fcsr_q.frm, fcsr_q.fflags};
                     end
                 end
-                riscv_pkg::CSR_VCSR: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VCSR: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {61'b0, vcsr_q.vxrm, vcsr_q.vxsat};
                     end
                 end
 
-                riscv_pkg::CSR_VXRM: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VXRM: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {62'b0, vcsr_q.vxrm};
@@ -351,283 +351,283 @@ module csr_bsc#(
                     end
                 end
 
-                riscv_pkg::CSR_VXSAT: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VXSAT: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {63'b0, vcsr_q.vxsat};
                     end
                 end
-                riscv_pkg::CSR_VSTART: begin // not supported
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VSTART: begin // not supported
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = {64'b0};
                     end
                 end
-                riscv_pkg::CSR_VL: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VL: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = vl_q;
                     end
                 end
 
-                riscv_pkg::CSR_VTYPE: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VTYPE: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                         csr_rdata = vtype_q;
                     end
                 end
                 
-                riscv_pkg::CSR_VLENB: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VLENB: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         read_access_exception = 1'b1;
                     end else begin
                             csr_rdata = (CORE_TYPE == def_pkg::LKA_CORE) ? VLEN_V >> 3 
-                                                                         : riscv_pkg::VLEN >> 3;
+                                                                         : riscv_pkg_sarg::VLEN >> 3;
                     end
                 end
 
                 // debug registers
-                riscv_pkg::CSR_DCSR:               csr_rdata = {{32{1'b0}}, dcsr_q}; // not implemented
-                riscv_pkg::CSR_DPC:                csr_rdata = dpc_q; // not implemented
-                riscv_pkg::CSR_DSCRATCH0:          csr_rdata = dscratch0_q; // not implemented
-                riscv_pkg::CSR_DSCRATCH1:          csr_rdata = dscratch1_q; // not implemented
+                riscv_pkg_sarg::CSR_DCSR:               csr_rdata = {{32{1'b0}}, dcsr_q}; // not implemented
+                riscv_pkg_sarg::CSR_DPC:                csr_rdata = dpc_q; // not implemented
+                riscv_pkg_sarg::CSR_DSCRATCH0:          csr_rdata = dscratch0_q; // not implemented
+                riscv_pkg_sarg::CSR_DSCRATCH1:          csr_rdata = dscratch1_q; // not implemented
                 // trigger module registers
-                riscv_pkg::CSR_TSELECT:; // not implemented
-                riscv_pkg::CSR_TDATA1:;  // not implemented
-                riscv_pkg::CSR_TDATA2:;  // not implemented
-                riscv_pkg::CSR_TDATA3:;  // not implemented
+                riscv_pkg_sarg::CSR_TSELECT:; // not implemented
+                riscv_pkg_sarg::CSR_TDATA1:;  // not implemented
+                riscv_pkg_sarg::CSR_TDATA2:;  // not implemented
+                riscv_pkg_sarg::CSR_TDATA3:;  // not implemented
                 // supervisor registers
-                riscv_pkg::CSR_SSTATUS: begin
+                riscv_pkg_sarg::CSR_SSTATUS: begin
                     csr_rdata = mstatus_q & def_pkg::SMODE_STATUS_READ_MASK;
                 end
-                riscv_pkg::CSR_SIE:                csr_rdata = mie_q & mideleg_q;
-                riscv_pkg::CSR_SIP:                csr_rdata = mip_q & mideleg_q;
-                riscv_pkg::CSR_STVEC:              csr_rdata = stvec_q;
-                riscv_pkg::CSR_SCOUNTEREN:         csr_rdata = {{32{1'b0}}, scounteren_q};
-                riscv_pkg::CSR_SENVCFG:            csr_rdata = {63'b0, senvcfg_q[0]}; // only implemented FIOM
-                riscv_pkg::CSR_SSCRATCH:           csr_rdata = sscratch_q;
-                riscv_pkg::CSR_SEPC:               csr_rdata = sepc_q;
-                riscv_pkg::CSR_SCAUSE:             csr_rdata = scause_q;
-                riscv_pkg::CSR_STVAL:              csr_rdata = stval_q;
-                riscv_pkg::CSR_SATP: begin
+                riscv_pkg_sarg::CSR_SIE:                csr_rdata = mie_q & mideleg_q;
+                riscv_pkg_sarg::CSR_SIP:                csr_rdata = mip_q & mideleg_q;
+                riscv_pkg_sarg::CSR_STVEC:              csr_rdata = stvec_q;
+                riscv_pkg_sarg::CSR_SCOUNTEREN:         csr_rdata = {{32{1'b0}}, scounteren_q};
+                riscv_pkg_sarg::CSR_SENVCFG:            csr_rdata = {63'b0, senvcfg_q[0]}; // only implemented FIOM
+                riscv_pkg_sarg::CSR_SSCRATCH:           csr_rdata = sscratch_q;
+                riscv_pkg_sarg::CSR_SEPC:               csr_rdata = sepc_q;
+                riscv_pkg_sarg::CSR_SCAUSE:             csr_rdata = scause_q;
+                riscv_pkg_sarg::CSR_STVAL:              csr_rdata = stval_q;
+                riscv_pkg_sarg::CSR_SATP: begin
                     csr_rdata = satp_q;
                     // intercept reads to SATP if in S-Mode and TVM is enabled
-                    if ((priv_lvl_o == riscv_pkg::PRIV_LVL_S) && mstatus_q.tvm) begin
+                    if ((priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_S) && mstatus_q.tvm) begin
                         read_access_exception = 1'b1;
                     end
                 end
                 // machine mode registers
-                riscv_pkg::CSR_MSTATUS:            csr_rdata = mstatus_q;
-                riscv_pkg::CSR_MISA:               csr_rdata = def_pkg::ISA_CODE; 
-                riscv_pkg::CSR_MEDELEG:            csr_rdata = medeleg_q;
-                riscv_pkg::CSR_MIDELEG:            csr_rdata = mideleg_q;
-                riscv_pkg::CSR_MIE:                csr_rdata = mie_q;
-                riscv_pkg::CSR_MTVEC:              csr_rdata = mtvec_q;
-                riscv_pkg::CSR_MCOUNTEREN:         csr_rdata = {{32{1'b0}}, mcounteren_q};
-                riscv_pkg::CSR_MCOUNTINHIBIT:      csr_rdata = {{32{1'b0}}, mcountinhibit_q[31:2], 1'b0, mcountinhibit_q[0]};
-                riscv_pkg::CSR_MSCRATCH:           csr_rdata = mscratch_q;
-                riscv_pkg::CSR_MEPC:               csr_rdata = mepc_q;
-                riscv_pkg::CSR_MCAUSE:             csr_rdata = mcause_q;
-                riscv_pkg::CSR_MTVAL:              csr_rdata = mtval_q;
-                riscv_pkg::CSR_MIP:                csr_rdata = mip_q;
-                riscv_pkg::CSR_MENVCFG:            csr_rdata = {63'b0, menvcfg_q[0]}; // only FIOM bit implemented
-                riscv_pkg::CSR_MVENDORID:          csr_rdata = 64'b0; // not implemented
-                riscv_pkg::CSR_MARCHID:            csr_rdata = 64'b0; // not implemented
-                riscv_pkg::CSR_MIMPID:             csr_rdata = 64'b0; // not implemented
-                riscv_pkg::CSR_MHARTID:            csr_rdata = core_id_i; 
-                riscv_pkg::CSR_MCONFIGPTR:         csr_rdata = 64'b0; // not implemented
+                riscv_pkg_sarg::CSR_MSTATUS:            csr_rdata = mstatus_q;
+                riscv_pkg_sarg::CSR_MISA:               csr_rdata = def_pkg::ISA_CODE; 
+                riscv_pkg_sarg::CSR_MEDELEG:            csr_rdata = medeleg_q;
+                riscv_pkg_sarg::CSR_MIDELEG:            csr_rdata = mideleg_q;
+                riscv_pkg_sarg::CSR_MIE:                csr_rdata = mie_q;
+                riscv_pkg_sarg::CSR_MTVEC:              csr_rdata = mtvec_q;
+                riscv_pkg_sarg::CSR_MCOUNTEREN:         csr_rdata = {{32{1'b0}}, mcounteren_q};
+                riscv_pkg_sarg::CSR_MCOUNTINHIBIT:      csr_rdata = {{32{1'b0}}, mcountinhibit_q[31:2], 1'b0, mcountinhibit_q[0]};
+                riscv_pkg_sarg::CSR_MSCRATCH:           csr_rdata = mscratch_q;
+                riscv_pkg_sarg::CSR_MEPC:               csr_rdata = mepc_q;
+                riscv_pkg_sarg::CSR_MCAUSE:             csr_rdata = mcause_q;
+                riscv_pkg_sarg::CSR_MTVAL:              csr_rdata = mtval_q;
+                riscv_pkg_sarg::CSR_MIP:                csr_rdata = mip_q;
+                riscv_pkg_sarg::CSR_MENVCFG:            csr_rdata = {63'b0, menvcfg_q[0]}; // only FIOM bit implemented
+                riscv_pkg_sarg::CSR_MVENDORID:          csr_rdata = 64'b0; // not implemented
+                riscv_pkg_sarg::CSR_MARCHID:            csr_rdata = 64'b0; // not implemented
+                riscv_pkg_sarg::CSR_MIMPID:             csr_rdata = 64'b0; // not implemented
+                riscv_pkg_sarg::CSR_MHARTID:            csr_rdata = core_id_i; 
+                riscv_pkg_sarg::CSR_MCONFIGPTR:         csr_rdata = 64'b0; // not implemented
                 `ifdef PITON_CINCORANCH
-                riscv_pkg::CSR_MBOOT_MAIN_ID:      csr_rdata = {62'b0, boot_main_id_i};
+                riscv_pkg_sarg::CSR_MBOOT_MAIN_ID:      csr_rdata = {62'b0, boot_main_id_i};
                 `endif  // Custom for CincoRanch
                 // Counters and Timers
-                riscv_pkg::CSR_MCYCLE:             csr_rdata = cycle_q;
-                riscv_pkg::CSR_MINSTRET:           csr_rdata = instret_q;
-                riscv_pkg::CSR_MHPM_COUNTER_3,
-                riscv_pkg::CSR_MHPM_COUNTER_4,
-                riscv_pkg::CSR_MHPM_COUNTER_5,
-                riscv_pkg::CSR_MHPM_COUNTER_6,
-                riscv_pkg::CSR_MHPM_COUNTER_7,
-                riscv_pkg::CSR_MHPM_COUNTER_8,
-                riscv_pkg::CSR_MHPM_COUNTER_9,
-                riscv_pkg::CSR_MHPM_COUNTER_10,
-                riscv_pkg::CSR_MHPM_COUNTER_11,
-                riscv_pkg::CSR_MHPM_COUNTER_12,
-                riscv_pkg::CSR_MHPM_COUNTER_13,
-                riscv_pkg::CSR_MHPM_COUNTER_14,
-                riscv_pkg::CSR_MHPM_COUNTER_15,
-                riscv_pkg::CSR_MHPM_COUNTER_16,
-                riscv_pkg::CSR_MHPM_COUNTER_17,
-                riscv_pkg::CSR_MHPM_COUNTER_18,
-                riscv_pkg::CSR_MHPM_COUNTER_19,
-                riscv_pkg::CSR_MHPM_COUNTER_20,
-                riscv_pkg::CSR_MHPM_COUNTER_21,
-                riscv_pkg::CSR_MHPM_COUNTER_22,
-                riscv_pkg::CSR_MHPM_COUNTER_23,
-                riscv_pkg::CSR_MHPM_COUNTER_24,
-                riscv_pkg::CSR_MHPM_COUNTER_25,
-                riscv_pkg::CSR_MHPM_COUNTER_26,
-                riscv_pkg::CSR_MHPM_COUNTER_27,
-                riscv_pkg::CSR_MHPM_COUNTER_28,
-                riscv_pkg::CSR_MHPM_COUNTER_29,
-                riscv_pkg::CSR_MHPM_COUNTER_30,
-                riscv_pkg::CSR_MHPM_COUNTER_31: begin
+                riscv_pkg_sarg::CSR_MCYCLE:             csr_rdata = cycle_q;
+                riscv_pkg_sarg::CSR_MINSTRET:           csr_rdata = instret_q;
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_3,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_4,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_5,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_6,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_7,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_8,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_9,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_10,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_11,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_12,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_13,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_14,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_15,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_16,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_17,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_18,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_19,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_20,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_21,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_22,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_23,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_24,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_25,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_26,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_27,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_28,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_29,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_30,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_31: begin
                     csr_rdata = perf_data_i;
                 end
 
-                riscv_pkg::CSR_CYCLE:              csr_rdata = cycle_q;
-                riscv_pkg::CSR_TIME:               csr_rdata = reg_time_q;
-                riscv_pkg::CSR_INSTRET:            csr_rdata = instret_q;
-                riscv_pkg::CSR_HPM_COUNTER_3,
-                riscv_pkg::CSR_HPM_COUNTER_4,
-                riscv_pkg::CSR_HPM_COUNTER_5,
-                riscv_pkg::CSR_HPM_COUNTER_6,
-                riscv_pkg::CSR_HPM_COUNTER_7,
-                riscv_pkg::CSR_HPM_COUNTER_8,
-                riscv_pkg::CSR_HPM_COUNTER_9,
-                riscv_pkg::CSR_HPM_COUNTER_10,
-                riscv_pkg::CSR_HPM_COUNTER_11,
-                riscv_pkg::CSR_HPM_COUNTER_12,
-                riscv_pkg::CSR_HPM_COUNTER_13,
-                riscv_pkg::CSR_HPM_COUNTER_14,
-                riscv_pkg::CSR_HPM_COUNTER_15,
-                riscv_pkg::CSR_HPM_COUNTER_16,
-                riscv_pkg::CSR_HPM_COUNTER_17,
-                riscv_pkg::CSR_HPM_COUNTER_18,
-                riscv_pkg::CSR_HPM_COUNTER_19,
-                riscv_pkg::CSR_HPM_COUNTER_20,
-                riscv_pkg::CSR_HPM_COUNTER_21,
-                riscv_pkg::CSR_HPM_COUNTER_22,
-                riscv_pkg::CSR_HPM_COUNTER_23,
-                riscv_pkg::CSR_HPM_COUNTER_24,
-                riscv_pkg::CSR_HPM_COUNTER_25,
-                riscv_pkg::CSR_HPM_COUNTER_26,
-                riscv_pkg::CSR_HPM_COUNTER_27,
-                riscv_pkg::CSR_HPM_COUNTER_28,
-                riscv_pkg::CSR_HPM_COUNTER_29,
-                riscv_pkg::CSR_HPM_COUNTER_30,
-                riscv_pkg::CSR_HPM_COUNTER_31: begin
+                riscv_pkg_sarg::CSR_CYCLE:              csr_rdata = cycle_q;
+                riscv_pkg_sarg::CSR_TIME:               csr_rdata = reg_time_q;
+                riscv_pkg_sarg::CSR_INSTRET:            csr_rdata = instret_q;
+                riscv_pkg_sarg::CSR_HPM_COUNTER_3,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_4,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_5,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_6,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_7,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_8,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_9,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_10,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_11,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_12,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_13,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_14,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_15,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_16,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_17,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_18,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_19,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_20,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_21,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_22,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_23,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_24,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_25,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_26,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_27,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_28,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_29,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_30,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_31: begin
                     perf_addr_dist = MHPM_TO_HPM_DIST;
                     csr_rdata = perf_data_i;
                 end
-                riscv_pkg::CSR_SCOUNTOVF:         csr_rdata = {{32{1'b0}}, scountovf_q & mcounteren_q};
-                riscv_pkg::CSR_MHPM_EVENT_3,
-                riscv_pkg::CSR_MHPM_EVENT_4,
-                riscv_pkg::CSR_MHPM_EVENT_5,
-                riscv_pkg::CSR_MHPM_EVENT_6,
-                riscv_pkg::CSR_MHPM_EVENT_7,
-                riscv_pkg::CSR_MHPM_EVENT_8,
-                riscv_pkg::CSR_MHPM_EVENT_9,
-                riscv_pkg::CSR_MHPM_EVENT_10,
-                riscv_pkg::CSR_MHPM_EVENT_11,
-                riscv_pkg::CSR_MHPM_EVENT_12,
-                riscv_pkg::CSR_MHPM_EVENT_13,
-                riscv_pkg::CSR_MHPM_EVENT_14,
-                riscv_pkg::CSR_MHPM_EVENT_15,
-                riscv_pkg::CSR_MHPM_EVENT_16,
-                riscv_pkg::CSR_MHPM_EVENT_17,
-                riscv_pkg::CSR_MHPM_EVENT_18,
-                riscv_pkg::CSR_MHPM_EVENT_19,
-                riscv_pkg::CSR_MHPM_EVENT_20,
-                riscv_pkg::CSR_MHPM_EVENT_21,
-                riscv_pkg::CSR_MHPM_EVENT_22,
-                riscv_pkg::CSR_MHPM_EVENT_23,
-                riscv_pkg::CSR_MHPM_EVENT_24,
-                riscv_pkg::CSR_MHPM_EVENT_25,
-                riscv_pkg::CSR_MHPM_EVENT_26,
-                riscv_pkg::CSR_MHPM_EVENT_27,
-                riscv_pkg::CSR_MHPM_EVENT_28,
-                riscv_pkg::CSR_MHPM_EVENT_29,
-                riscv_pkg::CSR_MHPM_EVENT_30,
-                riscv_pkg::CSR_MHPM_EVENT_31:   begin
+                riscv_pkg_sarg::CSR_SCOUNTOVF:         csr_rdata = {{32{1'b0}}, scountovf_q & mcounteren_q};
+                riscv_pkg_sarg::CSR_MHPM_EVENT_3,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_4,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_5,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_6,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_7,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_8,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_9,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_10,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_11,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_12,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_13,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_14,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_15,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_16,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_17,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_18,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_19,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_20,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_21,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_22,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_23,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_24,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_25,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_26,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_27,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_28,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_29,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_30,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_31:   begin
                     csr_rdata = perf_data_i;
                 end
 
                 `ifdef CONF_SARGANTANA_ENABLE_PCR
-                riscv_pkg::CSR_MEM_MAP_0,
-                riscv_pkg::CSR_MEM_MAP_1,
-                riscv_pkg::CSR_MEM_MAP_2,
-                riscv_pkg::CSR_MEM_MAP_3,
-                riscv_pkg::CSR_MEM_MAP_4,
-                riscv_pkg::CSR_MEM_MAP_5,
-                riscv_pkg::CSR_MEM_MAP_6,
-                riscv_pkg::CSR_MEM_MAP_7,
-                riscv_pkg::CSR_MEM_MAP_8,
-                riscv_pkg::CSR_MEM_MAP_9,
-                riscv_pkg::CSR_MEM_MAP_10,                
-                riscv_pkg::CSR_MEM_MAP_11,                
-                riscv_pkg::CSR_MEM_MAP_12,                
-                riscv_pkg::CSR_MEM_MAP_13,                
-                riscv_pkg::CSR_MEM_MAP_14,                
-                riscv_pkg::CSR_MEM_MAP_15,
-                riscv_pkg::CSR_IO_MAP_0,
-                riscv_pkg::CSR_IO_MAP_1,
-                riscv_pkg::CSR_IO_MAP_2,
-                riscv_pkg::CSR_IO_MAP_3,
-                riscv_pkg::CSR_IO_MAP_4,
-                riscv_pkg::CSR_IO_MAP_5,
-                riscv_pkg::CSR_IO_MAP_6,
-                riscv_pkg::CSR_IO_MAP_7,
-                riscv_pkg::CSR_IO_MAP_8,
-                riscv_pkg::CSR_IO_MAP_9,
-                riscv_pkg::CSR_IO_MAP_10,
-                riscv_pkg::CSR_IO_MAP_11,
-                riscv_pkg::CSR_IO_MAP_12,
-                riscv_pkg::CSR_IO_MAP_13,
-                riscv_pkg::CSR_IO_MAP_14,
-                riscv_pkg::CSR_IO_MAP_15,
-                riscv_pkg::CSR_IRQ_MAP_0,
-                riscv_pkg::CSR_IRQ_MAP_1,
-                riscv_pkg::CSR_IRQ_MAP_2,
-                riscv_pkg::CSR_IRQ_MAP_3,
-                riscv_pkg::CSR_IRQ_MAP_4,
-                riscv_pkg::CSR_IRQ_MAP_5,
-                riscv_pkg::CSR_IRQ_MAP_6,
-                riscv_pkg::CSR_IRQ_MAP_7,
-                riscv_pkg::CSR_IRQ_MAP_8,
-                riscv_pkg::CSR_IRQ_MAP_9,
-                riscv_pkg::CSR_IRQ_MAP_10,
-                riscv_pkg::CSR_IRQ_MAP_11,
-                riscv_pkg::CSR_IRQ_MAP_12,
-                riscv_pkg::CSR_IRQ_MAP_13,
-                riscv_pkg::CSR_IRQ_MAP_14,
-                riscv_pkg::CSR_IRQ_MAP_15,
-                riscv_pkg::FROM_HOST,
-                riscv_pkg::CSR_HYPERRAM_CONFIG, 
-                riscv_pkg::CSR_SPI_CONFIG, 
-                riscv_pkg::CSR_CNM_CONFIG,
-                riscv_pkg::TO_HOST,
-                riscv_pkg::CLEAR_MIP: begin 
+                riscv_pkg_sarg::CSR_MEM_MAP_0,
+                riscv_pkg_sarg::CSR_MEM_MAP_1,
+                riscv_pkg_sarg::CSR_MEM_MAP_2,
+                riscv_pkg_sarg::CSR_MEM_MAP_3,
+                riscv_pkg_sarg::CSR_MEM_MAP_4,
+                riscv_pkg_sarg::CSR_MEM_MAP_5,
+                riscv_pkg_sarg::CSR_MEM_MAP_6,
+                riscv_pkg_sarg::CSR_MEM_MAP_7,
+                riscv_pkg_sarg::CSR_MEM_MAP_8,
+                riscv_pkg_sarg::CSR_MEM_MAP_9,
+                riscv_pkg_sarg::CSR_MEM_MAP_10,                
+                riscv_pkg_sarg::CSR_MEM_MAP_11,                
+                riscv_pkg_sarg::CSR_MEM_MAP_12,                
+                riscv_pkg_sarg::CSR_MEM_MAP_13,                
+                riscv_pkg_sarg::CSR_MEM_MAP_14,                
+                riscv_pkg_sarg::CSR_MEM_MAP_15,
+                riscv_pkg_sarg::CSR_IO_MAP_0,
+                riscv_pkg_sarg::CSR_IO_MAP_1,
+                riscv_pkg_sarg::CSR_IO_MAP_2,
+                riscv_pkg_sarg::CSR_IO_MAP_3,
+                riscv_pkg_sarg::CSR_IO_MAP_4,
+                riscv_pkg_sarg::CSR_IO_MAP_5,
+                riscv_pkg_sarg::CSR_IO_MAP_6,
+                riscv_pkg_sarg::CSR_IO_MAP_7,
+                riscv_pkg_sarg::CSR_IO_MAP_8,
+                riscv_pkg_sarg::CSR_IO_MAP_9,
+                riscv_pkg_sarg::CSR_IO_MAP_10,
+                riscv_pkg_sarg::CSR_IO_MAP_11,
+                riscv_pkg_sarg::CSR_IO_MAP_12,
+                riscv_pkg_sarg::CSR_IO_MAP_13,
+                riscv_pkg_sarg::CSR_IO_MAP_14,
+                riscv_pkg_sarg::CSR_IO_MAP_15,
+                riscv_pkg_sarg::CSR_IRQ_MAP_0,
+                riscv_pkg_sarg::CSR_IRQ_MAP_1,
+                riscv_pkg_sarg::CSR_IRQ_MAP_2,
+                riscv_pkg_sarg::CSR_IRQ_MAP_3,
+                riscv_pkg_sarg::CSR_IRQ_MAP_4,
+                riscv_pkg_sarg::CSR_IRQ_MAP_5,
+                riscv_pkg_sarg::CSR_IRQ_MAP_6,
+                riscv_pkg_sarg::CSR_IRQ_MAP_7,
+                riscv_pkg_sarg::CSR_IRQ_MAP_8,
+                riscv_pkg_sarg::CSR_IRQ_MAP_9,
+                riscv_pkg_sarg::CSR_IRQ_MAP_10,
+                riscv_pkg_sarg::CSR_IRQ_MAP_11,
+                riscv_pkg_sarg::CSR_IRQ_MAP_12,
+                riscv_pkg_sarg::CSR_IRQ_MAP_13,
+                riscv_pkg_sarg::CSR_IRQ_MAP_14,
+                riscv_pkg_sarg::CSR_IRQ_MAP_15,
+                riscv_pkg_sarg::FROM_HOST,
+                riscv_pkg_sarg::CSR_HYPERRAM_CONFIG, 
+                riscv_pkg_sarg::CSR_SPI_CONFIG, 
+                riscv_pkg_sarg::CSR_CNM_CONFIG,
+                riscv_pkg_sarg::TO_HOST,
+                riscv_pkg_sarg::CLEAR_MIP: begin 
                         csr_rdata = pcr_resp_data_i;
                         pcr_addr_valid = 1'b1;
                     
                 end
                 `endif // CONF_SARGANTANA_ENABLE_PCR
 
-                riscv_pkg::CSR_PMPCFG_0:;
-                riscv_pkg::CSR_PMPCFG_1:;
-                riscv_pkg::CSR_PMPCFG_2:;
-                riscv_pkg::CSR_PMPCFG_3:;
+                riscv_pkg_sarg::CSR_PMPCFG_0:;
+                riscv_pkg_sarg::CSR_PMPCFG_1:;
+                riscv_pkg_sarg::CSR_PMPCFG_2:;
+                riscv_pkg_sarg::CSR_PMPCFG_3:;
 
-                riscv_pkg::CSR_PMPADDR_0:;
-                riscv_pkg::CSR_PMPADDR_1:;
-                riscv_pkg::CSR_PMPADDR_2:;
-                riscv_pkg::CSR_PMPADDR_3:;
-                riscv_pkg::CSR_PMPADDR_4:;
-                riscv_pkg::CSR_PMPADDR_5:;
-                riscv_pkg::CSR_PMPADDR_6:;
-                riscv_pkg::CSR_PMPADDR_7:;
-                riscv_pkg::CSR_PMPADDR_8:;
-                riscv_pkg::CSR_PMPADDR_9:;
-                riscv_pkg::CSR_PMPADDR_10:;
-                riscv_pkg::CSR_PMPADDR_11:;
-                riscv_pkg::CSR_PMPADDR_12:;
-                riscv_pkg::CSR_PMPADDR_13:;
-                riscv_pkg::CSR_PMPADDR_14:;
-                riscv_pkg::CSR_PMPADDR_15:;
+                riscv_pkg_sarg::CSR_PMPADDR_0:;
+                riscv_pkg_sarg::CSR_PMPADDR_1:;
+                riscv_pkg_sarg::CSR_PMPADDR_2:;
+                riscv_pkg_sarg::CSR_PMPADDR_3:;
+                riscv_pkg_sarg::CSR_PMPADDR_4:;
+                riscv_pkg_sarg::CSR_PMPADDR_5:;
+                riscv_pkg_sarg::CSR_PMPADDR_6:;
+                riscv_pkg_sarg::CSR_PMPADDR_7:;
+                riscv_pkg_sarg::CSR_PMPADDR_8:;
+                riscv_pkg_sarg::CSR_PMPADDR_9:;
+                riscv_pkg_sarg::CSR_PMPADDR_10:;
+                riscv_pkg_sarg::CSR_PMPADDR_11:;
+                riscv_pkg_sarg::CSR_PMPADDR_12:;
+                riscv_pkg_sarg::CSR_PMPADDR_13:;
+                riscv_pkg_sarg::CSR_PMPADDR_14:;
+                riscv_pkg_sarg::CSR_PMPADDR_15:;
                 //
                 default: read_access_exception = 1'b1;
             endcase
@@ -642,7 +642,7 @@ module csr_bsc#(
     // ---------------------------
     logic [63:0] mask;
     always_comb begin : csr_update
-        automatic riscv_pkg::satp_t satp,satp_temp; // temporal values to correct the structure of the writing on the satp reg
+        automatic riscv_pkg_sarg::satp_t satp,satp_temp; // temporal values to correct the structure of the writing on the satp reg
         automatic logic [63:0] instret;
         automatic logic [63:0] mstatus_int, mstatus_clear ,mstatus_set; //Used to set and clear some bits of the mstatus_d
         automatic logic flush; //temporal flush value befor the exceptions logic
@@ -687,10 +687,10 @@ module csr_bsc#(
 
         priv_lvl_d              = priv_lvl_q;
 
-        mstatus_clear = riscv_pkg::MSTATUS_UXL | riscv_pkg::MSTATUS_SXL | riscv_pkg::MSTATUS64_SD;
-        mstatus_set =   (((mstatus_q.xs == riscv_pkg::Dirty) || (mstatus_q.fs == riscv_pkg::Dirty) || (mstatus_q.vs == riscv_pkg::Dirty))<<63) |
-                        {30'b0,riscv_pkg::XLEN_64,32'b0} |
-                        {28'b0,riscv_pkg::XLEN_64,34'b0};
+        mstatus_clear = riscv_pkg_sarg::MSTATUS_UXL | riscv_pkg_sarg::MSTATUS_SXL | riscv_pkg_sarg::MSTATUS64_SD;
+        mstatus_set =   (((mstatus_q.xs == riscv_pkg_sarg::Dirty) || (mstatus_q.fs == riscv_pkg_sarg::Dirty) || (mstatus_q.vs == riscv_pkg_sarg::Dirty))<<63) |
+                        {30'b0,riscv_pkg_sarg::XLEN_64,32'b0} |
+                        {28'b0,riscv_pkg_sarg::XLEN_64,34'b0};
         mstatus_int   = (mstatus_q & ~mstatus_clear) | mstatus_set;
 
 
@@ -714,12 +714,12 @@ module csr_bsc#(
         end 
 
         dirty_v_state_csr = 1'b0;
-        if ((vsetvl_insn | vreg_modified_i) && (mstatus_q.vs != riscv_pkg::Off)) begin
+        if ((vsetvl_insn | vreg_modified_i) && (mstatus_q.vs != riscv_pkg_sarg::Off)) begin
             dirty_v_state_csr = 1'b1;
         end 
 
         dirty_fp_state_csr      = 1'b0;
-        if (freg_modified_i && (mstatus_q.fs != riscv_pkg::Off)) begin
+        if (freg_modified_i && (mstatus_q.fs != riscv_pkg_sarg::Off)) begin
             dirty_fp_state_csr = 1'b1;
         end
 
@@ -774,8 +774,8 @@ module csr_bsc#(
         if (csr_we) begin
             unique case (csr_addr.address)
                 // Floating-Point
-                riscv_pkg::CSR_FFLAGS: begin
-                    if (mstatus_q.fs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_FFLAGS: begin
+                    if (mstatus_q.fs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end else begin
                         dirty_fp_state_csr = 1'b1;
@@ -784,8 +784,8 @@ module csr_bsc#(
                         flush = 1'b1;
                     end
                 end
-                riscv_pkg::CSR_FRM: begin
-                    if (mstatus_q.fs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_FRM: begin
+                    if (mstatus_q.fs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end else begin
                         dirty_fp_state_csr = 1'b1;
@@ -794,8 +794,8 @@ module csr_bsc#(
                         flush = 1'b1;
                     end
                 end
-                riscv_pkg::CSR_FCSR: begin
-                    if (mstatus_q.fs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_FCSR: begin
+                    if (mstatus_q.fs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end else begin
                         dirty_fp_state_csr = 1'b1;
@@ -804,8 +804,8 @@ module csr_bsc#(
                         flush = 1'b1;
                     end
                 end
-                riscv_pkg::CSR_VXSAT: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VXSAT: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end else begin
                         dirty_v_state_csr  = 1'b1;
@@ -815,8 +815,8 @@ module csr_bsc#(
                     end
                     
                 end
-                riscv_pkg::CSR_VXRM: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VXRM: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end else begin
                         dirty_v_state_csr  = 1'b1;
@@ -826,8 +826,8 @@ module csr_bsc#(
                         flush = 1'b1;
                     end
                 end
-                riscv_pkg::CSR_VCSR: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VCSR: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end else begin
                         dirty_v_state_csr = 1'b1;
@@ -837,29 +837,29 @@ module csr_bsc#(
                         flush = 1'b1;
                     end
                 end
-                riscv_pkg::CSR_VSTART: begin
-                    if (mstatus_q.vs == riscv_pkg::Off) begin
+                riscv_pkg_sarg::CSR_VSTART: begin
+                    if (mstatus_q.vs == riscv_pkg_sarg::Off) begin
                         update_access_exception = 1'b1;
                     end
                 end
                 // debug CSR
-                riscv_pkg::CSR_DCSR: begin
+                riscv_pkg_sarg::CSR_DCSR: begin
                     if (csr_wdata[1:0] == 2'b10) begin // illegal value for prv, maintain old
                         dcsr_d = {dcsr_q[31:16], csr_wdata[15], 1'b0, csr_wdata[13:12], dcsr_q[11:5], csr_wdata[4], dcsr_q[3], csr_wdata[2], dcsr_q[1:0]};
                     end else begin
                         dcsr_d = {dcsr_q[31:16], csr_wdata[15], 1'b0, csr_wdata[13:12], dcsr_q[11:5], csr_wdata[4], dcsr_q[3], csr_wdata[2:0]};
                     end
                 end
-                riscv_pkg::CSR_DPC:         dpc_d = csr_wdata;
-                riscv_pkg::CSR_DSCRATCH0:   dscratch0_d = csr_wdata;
-                riscv_pkg::CSR_DSCRATCH1:   dscratch1_d = csr_wdata;
+                riscv_pkg_sarg::CSR_DPC:         dpc_d = csr_wdata;
+                riscv_pkg_sarg::CSR_DSCRATCH0:   dscratch0_d = csr_wdata;
+                riscv_pkg_sarg::CSR_DSCRATCH1:   dscratch1_d = csr_wdata;
                 // trigger module CSRs
-                riscv_pkg::CSR_TSELECT:; // not implemented
-                riscv_pkg::CSR_TDATA1:;  // not implemented
-                riscv_pkg::CSR_TDATA2:;  // not implemented
-                riscv_pkg::CSR_TDATA3:;  // not implemented
+                riscv_pkg_sarg::CSR_TSELECT:; // not implemented
+                riscv_pkg_sarg::CSR_TDATA1:;  // not implemented
+                riscv_pkg_sarg::CSR_TDATA2:;  // not implemented
+                riscv_pkg_sarg::CSR_TDATA3:;  // not implemented
                 // sstatus is a subset of mstatus - mask it accordingly
-                riscv_pkg::CSR_SSTATUS: begin
+                riscv_pkg_sarg::CSR_SSTATUS: begin
                     mask = def_pkg::SMODE_STATUS_WRITE_MASK;
                     mstatus_int = (mstatus_q & ~mask) | (csr_wdata & mask);
                     // this instruction has side-effects
@@ -867,32 +867,32 @@ module csr_bsc#(
                 end
                 // even machine mode interrupts can be visible and set-able to supervisor
                 // if the corresponding bit in mideleg is set
-                riscv_pkg::CSR_SIE: begin
+                riscv_pkg_sarg::CSR_SIE: begin
                     // the mideleg makes sure only delegate-able register (and therefore also only implemented registers) are written
-                    mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_LCOFIP;
+                    mask = riscv_pkg_sarg::MIP_SSIP | riscv_pkg_sarg::MIP_STIP | riscv_pkg_sarg::MIP_SEIP | riscv_pkg_sarg::MIP_LCOFIP;
                     mie_d = (mie_q & ~mask) | (csr_wdata & mask);
                 end
 
-                riscv_pkg::CSR_SIP: begin
+                riscv_pkg_sarg::CSR_SIP: begin
                     // only the supervisor software interrupt is write-able, iff delegated
-                    mask = (riscv_pkg::MIP_SSIP | riscv_pkg::MIP_LCOFIP) & mideleg_q;
+                    mask = (riscv_pkg_sarg::MIP_SSIP | riscv_pkg_sarg::MIP_LCOFIP) & mideleg_q;
                     mip_d = (mip_q & ~mask) | (csr_wdata & mask);
                 end
 
-                riscv_pkg::CSR_SCOUNTEREN:         scounteren_d =  {csr_wdata[31:0]};
-                riscv_pkg::CSR_STVEC:              stvec_d     = {csr_wdata[63:2], 1'b0, csr_wdata[0]};
-                riscv_pkg::CSR_SENVCFG:            senvcfg_d   = csr_wdata;
-                riscv_pkg::CSR_SSCRATCH:           sscratch_d  = csr_wdata;
-                riscv_pkg::CSR_SEPC:               sepc_int    = {csr_wdata[63:1], 1'b0};
-                riscv_pkg::CSR_SCAUSE:             scause_int  = csr_wdata;
-                riscv_pkg::CSR_STVAL:              stval_int   = csr_wdata;
+                riscv_pkg_sarg::CSR_SCOUNTEREN:         scounteren_d =  {csr_wdata[31:0]};
+                riscv_pkg_sarg::CSR_STVEC:              stvec_d     = {csr_wdata[63:2], 1'b0, csr_wdata[0]};
+                riscv_pkg_sarg::CSR_SENVCFG:            senvcfg_d   = csr_wdata;
+                riscv_pkg_sarg::CSR_SSCRATCH:           sscratch_d  = csr_wdata;
+                riscv_pkg_sarg::CSR_SEPC:               sepc_int    = {csr_wdata[63:1], 1'b0};
+                riscv_pkg_sarg::CSR_SCAUSE:             scause_int  = csr_wdata;
+                riscv_pkg_sarg::CSR_STVAL:              stval_int   = csr_wdata;
                 // supervisor address translation and protection
-                riscv_pkg::CSR_SATP: begin
+                riscv_pkg_sarg::CSR_SATP: begin
                     // intercept SATP writes if in S-Mode and TVM is enabled
-                    if ((priv_lvl_o == riscv_pkg::PRIV_LVL_S) && mstatus_q.tvm)
+                    if ((priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_S) && mstatus_q.tvm)
                         update_access_exception = 1'b1;
                     else begin
-                        satp_temp      = riscv_pkg::satp_t'(csr_wdata);
+                        satp_temp      = riscv_pkg_sarg::satp_t'(csr_wdata);
                         // only make ASID_LEN - 1 bit stick, that way software can figure out how many ASID bits are supported
                         satp.asid = satp_temp.asid & {{(16-ASID_WIDTH){1'b0}}, {ASID_WIDTH{1'b1}}};
                         satp.mode = satp_temp.mode;
@@ -905,242 +905,242 @@ module csr_bsc#(
                     flush = 1'b1;
                 end
 
-                riscv_pkg::CSR_MSTATUS: begin
+                riscv_pkg_sarg::CSR_MSTATUS: begin
                     // mask of the bits that are set to zero
-                    mask = riscv_pkg::MSTATUS_UIE | riscv_pkg::MSTATUS_UPIE | riscv_pkg::MSTATUS_XS | riscv_pkg::MSTATUS64_WPRI;
+                    mask = riscv_pkg_sarg::MSTATUS_UIE | riscv_pkg_sarg::MSTATUS_UPIE | riscv_pkg_sarg::MSTATUS_XS | riscv_pkg_sarg::MSTATUS64_WPRI;
                     mstatus_int      = csr_wdata & ~mask;
                     
                     // this register has side-effects on other registers, flush the pipeline
                     flush        = 1'b1;
                 end
                 // MISA is WARL (Write Any Value, Reads Legal Value)
-                riscv_pkg::CSR_MISA:;
+                riscv_pkg_sarg::CSR_MISA:;
                 // machine exception delegation register
                 // 0 - 15 exceptions supported
-                riscv_pkg::CSR_MEDELEG: begin
-                    mask = (1 << riscv_pkg::INSTR_ADDR_MISALIGNED) |
-                           (1 << riscv_pkg::BREAKPOINT) |
-                           (1 << riscv_pkg::USER_ECALL) |
-                           (1 << riscv_pkg::INSTR_PAGE_FAULT) |
-                           (1 << riscv_pkg::LD_PAGE_FAULT) |
-                           (1 << riscv_pkg::ST_AMO_PAGE_FAULT);
+                riscv_pkg_sarg::CSR_MEDELEG: begin
+                    mask = (1 << riscv_pkg_sarg::INSTR_ADDR_MISALIGNED) |
+                           (1 << riscv_pkg_sarg::BREAKPOINT) |
+                           (1 << riscv_pkg_sarg::USER_ECALL) |
+                           (1 << riscv_pkg_sarg::INSTR_PAGE_FAULT) |
+                           (1 << riscv_pkg_sarg::LD_PAGE_FAULT) |
+                           (1 << riscv_pkg_sarg::ST_AMO_PAGE_FAULT);
                     medeleg_d = (medeleg_q & ~mask) | (csr_wdata & mask);
                 end
                 // machine interrupt delegation register
                 // we do not support user interrupt delegation
-                riscv_pkg::CSR_MIDELEG: begin
-                    mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_LCOFIP;
+                riscv_pkg_sarg::CSR_MIDELEG: begin
+                    mask = riscv_pkg_sarg::MIP_SSIP | riscv_pkg_sarg::MIP_STIP | riscv_pkg_sarg::MIP_SEIP | riscv_pkg_sarg::MIP_LCOFIP;
                     mideleg_d = (mideleg_q & ~mask) | (csr_wdata & mask);
                 end
                 // mask the register so that unsupported interrupts can never be set
-                riscv_pkg::CSR_MIE: begin
-                    mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_MSIP | riscv_pkg::MIP_MTIP | riscv_pkg::MIP_MEIP | riscv_pkg::MIP_LCOFIP;
+                riscv_pkg_sarg::CSR_MIE: begin
+                    mask = riscv_pkg_sarg::MIP_SSIP | riscv_pkg_sarg::MIP_STIP | riscv_pkg_sarg::MIP_SEIP | riscv_pkg_sarg::MIP_MSIP | riscv_pkg_sarg::MIP_MTIP | riscv_pkg_sarg::MIP_MEIP | riscv_pkg_sarg::MIP_LCOFIP;
                     mie_d = (mie_q & ~mask) | (csr_wdata & mask); // we only support supervisor and M-mode interrupts
                 end
 
-                riscv_pkg::CSR_MTVEC: begin
+                riscv_pkg_sarg::CSR_MTVEC: begin
                     mtvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};
                     // we are in vector mode, this implementation requires the additional
                     // alignment constraint of 64 * 4 bytes
                     if (csr_wdata[0]) mtvec_d = {csr_wdata[63:8], 7'b0, csr_wdata[0]};
                 end
 
-                riscv_pkg::CSR_MCOUNTEREN:         mcounteren_d = csr_wdata[31:0];
-                riscv_pkg::CSR_MCOUNTINHIBIT:      mcountinhibit_d = csr_wdata[31:0];
-                riscv_pkg::CSR_MSCRATCH:           mscratch_d  = csr_wdata;
-                riscv_pkg::CSR_MEPC:               mepc_int    = {csr_wdata[63:2], 2'b0}; // we only support IALIGN=32 since we do not support C extension
-                riscv_pkg::CSR_MCAUSE:             mcause_int  = csr_wdata;
-                riscv_pkg::CSR_MTVAL:              mtval_int   = csr_wdata;
-                riscv_pkg::CSR_MENVCFG:            menvcfg_d   = csr_wdata;
-                riscv_pkg::CSR_MIP: begin
-                    mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_LCOFIP;
+                riscv_pkg_sarg::CSR_MCOUNTEREN:         mcounteren_d = csr_wdata[31:0];
+                riscv_pkg_sarg::CSR_MCOUNTINHIBIT:      mcountinhibit_d = csr_wdata[31:0];
+                riscv_pkg_sarg::CSR_MSCRATCH:           mscratch_d  = csr_wdata;
+                riscv_pkg_sarg::CSR_MEPC:               mepc_int    = {csr_wdata[63:2], 2'b0}; // we only support IALIGN=32 since we do not support C extension
+                riscv_pkg_sarg::CSR_MCAUSE:             mcause_int  = csr_wdata;
+                riscv_pkg_sarg::CSR_MTVAL:              mtval_int   = csr_wdata;
+                riscv_pkg_sarg::CSR_MENVCFG:            menvcfg_d   = csr_wdata;
+                riscv_pkg_sarg::CSR_MIP: begin
+                    mask = riscv_pkg_sarg::MIP_SSIP | riscv_pkg_sarg::MIP_STIP | riscv_pkg_sarg::MIP_SEIP | riscv_pkg_sarg::MIP_LCOFIP;
                     mip_d = (mip_q & ~mask) | (csr_wdata & mask);
                 end
                 // performance counters
-                riscv_pkg::CSR_MCYCLE:             cycle_d     = csr_wdata;
-                riscv_pkg::CSR_MINSTRET:           instret_d     = csr_wdata;
+                riscv_pkg_sarg::CSR_MCYCLE:             cycle_d     = csr_wdata;
+                riscv_pkg_sarg::CSR_MINSTRET:           instret_d     = csr_wdata;
 
-                riscv_pkg::CSR_MHPM_COUNTER_3,
-                riscv_pkg::CSR_MHPM_COUNTER_4,
-                riscv_pkg::CSR_MHPM_COUNTER_5,
-                riscv_pkg::CSR_MHPM_COUNTER_6,
-                riscv_pkg::CSR_MHPM_COUNTER_7,
-                riscv_pkg::CSR_MHPM_COUNTER_8,
-                riscv_pkg::CSR_MHPM_COUNTER_9,
-                riscv_pkg::CSR_MHPM_COUNTER_10,
-                riscv_pkg::CSR_MHPM_COUNTER_11,
-                riscv_pkg::CSR_MHPM_COUNTER_12,
-                riscv_pkg::CSR_MHPM_COUNTER_13,
-                riscv_pkg::CSR_MHPM_COUNTER_14,
-                riscv_pkg::CSR_MHPM_COUNTER_15,
-                riscv_pkg::CSR_MHPM_COUNTER_16,
-                riscv_pkg::CSR_MHPM_COUNTER_17,
-                riscv_pkg::CSR_MHPM_COUNTER_18,
-                riscv_pkg::CSR_MHPM_COUNTER_19,
-                riscv_pkg::CSR_MHPM_COUNTER_20,
-                riscv_pkg::CSR_MHPM_COUNTER_21,
-                riscv_pkg::CSR_MHPM_COUNTER_22,
-                riscv_pkg::CSR_MHPM_COUNTER_23,
-                riscv_pkg::CSR_MHPM_COUNTER_24,
-                riscv_pkg::CSR_MHPM_COUNTER_25,
-                riscv_pkg::CSR_MHPM_COUNTER_26,
-                riscv_pkg::CSR_MHPM_COUNTER_27,
-                riscv_pkg::CSR_MHPM_COUNTER_28,
-                riscv_pkg::CSR_MHPM_COUNTER_29,
-                riscv_pkg::CSR_MHPM_COUNTER_30,
-                riscv_pkg::CSR_MHPM_COUNTER_31: begin
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_3,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_4,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_5,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_6,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_7,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_8,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_9,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_10,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_11,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_12,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_13,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_14,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_15,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_16,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_17,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_18,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_19,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_20,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_21,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_22,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_23,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_24,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_25,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_26,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_27,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_28,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_29,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_30,
+                riscv_pkg_sarg::CSR_MHPM_COUNTER_31: begin
                     perf_we_o = 1'b1;
                     perf_data_o = csr_wdata;
                 end
 
-                riscv_pkg::CSR_MHPM_EVENT_3,
-                riscv_pkg::CSR_MHPM_EVENT_4,
-                riscv_pkg::CSR_MHPM_EVENT_5,
-                riscv_pkg::CSR_MHPM_EVENT_6,
-                riscv_pkg::CSR_MHPM_EVENT_7,
-                riscv_pkg::CSR_MHPM_EVENT_8,
-                riscv_pkg::CSR_MHPM_EVENT_9,
-                riscv_pkg::CSR_MHPM_EVENT_10,
-                riscv_pkg::CSR_MHPM_EVENT_11,
-                riscv_pkg::CSR_MHPM_EVENT_12,
-                riscv_pkg::CSR_MHPM_EVENT_13,
-                riscv_pkg::CSR_MHPM_EVENT_14,
-                riscv_pkg::CSR_MHPM_EVENT_15,
-                riscv_pkg::CSR_MHPM_EVENT_16,
-                riscv_pkg::CSR_MHPM_EVENT_17,
-                riscv_pkg::CSR_MHPM_EVENT_18,
-                riscv_pkg::CSR_MHPM_EVENT_19,
-                riscv_pkg::CSR_MHPM_EVENT_20,
-                riscv_pkg::CSR_MHPM_EVENT_21,
-                riscv_pkg::CSR_MHPM_EVENT_22,
-                riscv_pkg::CSR_MHPM_EVENT_23,
-                riscv_pkg::CSR_MHPM_EVENT_24,
-                riscv_pkg::CSR_MHPM_EVENT_25,
-                riscv_pkg::CSR_MHPM_EVENT_26,
-                riscv_pkg::CSR_MHPM_EVENT_27,
-                riscv_pkg::CSR_MHPM_EVENT_28,
-                riscv_pkg::CSR_MHPM_EVENT_29,
-                riscv_pkg::CSR_MHPM_EVENT_30,
-                riscv_pkg::CSR_MHPM_EVENT_31: begin
+                riscv_pkg_sarg::CSR_MHPM_EVENT_3,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_4,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_5,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_6,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_7,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_8,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_9,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_10,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_11,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_12,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_13,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_14,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_15,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_16,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_17,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_18,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_19,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_20,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_21,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_22,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_23,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_24,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_25,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_26,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_27,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_28,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_29,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_30,
+                riscv_pkg_sarg::CSR_MHPM_EVENT_31: begin
                     perf_we_o = 1'b1;
                     perf_data_o = csr_wdata;
                 end
 
-                riscv_pkg::CSR_CYCLE,
-                riscv_pkg::CSR_TIME,
-                riscv_pkg::CSR_INSTRET,
-                riscv_pkg::CSR_HPM_COUNTER_3,
-                riscv_pkg::CSR_HPM_COUNTER_4,
-                riscv_pkg::CSR_HPM_COUNTER_5,
-                riscv_pkg::CSR_HPM_COUNTER_6,
-                riscv_pkg::CSR_HPM_COUNTER_7,
-                riscv_pkg::CSR_HPM_COUNTER_8,
-                riscv_pkg::CSR_HPM_COUNTER_9,
-                riscv_pkg::CSR_HPM_COUNTER_10,
-                riscv_pkg::CSR_HPM_COUNTER_11,
-                riscv_pkg::CSR_HPM_COUNTER_12,
-                riscv_pkg::CSR_HPM_COUNTER_13,
-                riscv_pkg::CSR_HPM_COUNTER_14,
-                riscv_pkg::CSR_HPM_COUNTER_15,
-                riscv_pkg::CSR_HPM_COUNTER_16,
-                riscv_pkg::CSR_HPM_COUNTER_17,
-                riscv_pkg::CSR_HPM_COUNTER_18,
-                riscv_pkg::CSR_HPM_COUNTER_19,
-                riscv_pkg::CSR_HPM_COUNTER_20,
-                riscv_pkg::CSR_HPM_COUNTER_21,
-                riscv_pkg::CSR_HPM_COUNTER_22,
-                riscv_pkg::CSR_HPM_COUNTER_23,
-                riscv_pkg::CSR_HPM_COUNTER_24,
-                riscv_pkg::CSR_HPM_COUNTER_25,
-                riscv_pkg::CSR_HPM_COUNTER_26,
-                riscv_pkg::CSR_HPM_COUNTER_27,
-                riscv_pkg::CSR_HPM_COUNTER_28,
-                riscv_pkg::CSR_HPM_COUNTER_29,
-                riscv_pkg::CSR_HPM_COUNTER_30,
-                riscv_pkg::CSR_HPM_COUNTER_31,
-                riscv_pkg::CSR_SCOUNTOVF:
+                riscv_pkg_sarg::CSR_CYCLE,
+                riscv_pkg_sarg::CSR_TIME,
+                riscv_pkg_sarg::CSR_INSTRET,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_3,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_4,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_5,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_6,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_7,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_8,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_9,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_10,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_11,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_12,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_13,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_14,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_15,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_16,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_17,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_18,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_19,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_20,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_21,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_22,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_23,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_24,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_25,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_26,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_27,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_28,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_29,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_30,
+                riscv_pkg_sarg::CSR_HPM_COUNTER_31,
+                riscv_pkg_sarg::CSR_SCOUNTOVF:
                     update_access_exception = 1'b1;
 
                 `ifdef CONF_SARGANTANA_ENABLE_PCR
-                riscv_pkg::CSR_MEM_MAP_0,
-                riscv_pkg::CSR_MEM_MAP_1,
-                riscv_pkg::CSR_MEM_MAP_2,
-                riscv_pkg::CSR_MEM_MAP_3,
-                riscv_pkg::CSR_MEM_MAP_4,
-                riscv_pkg::CSR_MEM_MAP_5,
-                riscv_pkg::CSR_MEM_MAP_6,
-                riscv_pkg::CSR_MEM_MAP_7,
-                riscv_pkg::CSR_MEM_MAP_8,
-                riscv_pkg::CSR_MEM_MAP_9,
-                riscv_pkg::CSR_MEM_MAP_10,                
-                riscv_pkg::CSR_MEM_MAP_11,                
-                riscv_pkg::CSR_MEM_MAP_12,                
-                riscv_pkg::CSR_MEM_MAP_13,                
-                riscv_pkg::CSR_MEM_MAP_14,                
-                riscv_pkg::CSR_MEM_MAP_15,
-                riscv_pkg::CSR_IO_MAP_0,
-                riscv_pkg::CSR_IO_MAP_1,
-                riscv_pkg::CSR_IO_MAP_2,
-                riscv_pkg::CSR_IO_MAP_3,
-                riscv_pkg::CSR_IO_MAP_4,
-                riscv_pkg::CSR_IO_MAP_5,
-                riscv_pkg::CSR_IO_MAP_6,
-                riscv_pkg::CSR_IO_MAP_7,
-                riscv_pkg::CSR_IO_MAP_8,
-                riscv_pkg::CSR_IO_MAP_9,
-                riscv_pkg::CSR_IO_MAP_10,
-                riscv_pkg::CSR_IO_MAP_11,
-                riscv_pkg::CSR_IO_MAP_12,
-                riscv_pkg::CSR_IO_MAP_13,
-                riscv_pkg::CSR_IO_MAP_14,
-                riscv_pkg::CSR_IO_MAP_15,
-                riscv_pkg::CSR_IRQ_MAP_0,
-                riscv_pkg::CSR_IRQ_MAP_1,
-                riscv_pkg::CSR_IRQ_MAP_2,
-                riscv_pkg::CSR_IRQ_MAP_3,
-                riscv_pkg::CSR_IRQ_MAP_4,
-                riscv_pkg::CSR_IRQ_MAP_5,
-                riscv_pkg::CSR_IRQ_MAP_6,
-                riscv_pkg::CSR_IRQ_MAP_7,
-                riscv_pkg::CSR_IRQ_MAP_8,
-                riscv_pkg::CSR_IRQ_MAP_9,
-                riscv_pkg::CSR_IRQ_MAP_10,
-                riscv_pkg::CSR_IRQ_MAP_11,
-                riscv_pkg::CSR_IRQ_MAP_12,
-                riscv_pkg::CSR_IRQ_MAP_13,
-                riscv_pkg::CSR_IRQ_MAP_14,
-                riscv_pkg::CSR_IRQ_MAP_15,
-                riscv_pkg::FROM_HOST,
-                riscv_pkg::CSR_HYPERRAM_CONFIG, 
-                riscv_pkg::CSR_SPI_CONFIG, 
-                riscv_pkg::CSR_CNM_CONFIG,
-                riscv_pkg::TO_HOST,
-                riscv_pkg::CLEAR_MIP: begin
+                riscv_pkg_sarg::CSR_MEM_MAP_0,
+                riscv_pkg_sarg::CSR_MEM_MAP_1,
+                riscv_pkg_sarg::CSR_MEM_MAP_2,
+                riscv_pkg_sarg::CSR_MEM_MAP_3,
+                riscv_pkg_sarg::CSR_MEM_MAP_4,
+                riscv_pkg_sarg::CSR_MEM_MAP_5,
+                riscv_pkg_sarg::CSR_MEM_MAP_6,
+                riscv_pkg_sarg::CSR_MEM_MAP_7,
+                riscv_pkg_sarg::CSR_MEM_MAP_8,
+                riscv_pkg_sarg::CSR_MEM_MAP_9,
+                riscv_pkg_sarg::CSR_MEM_MAP_10,                
+                riscv_pkg_sarg::CSR_MEM_MAP_11,                
+                riscv_pkg_sarg::CSR_MEM_MAP_12,                
+                riscv_pkg_sarg::CSR_MEM_MAP_13,                
+                riscv_pkg_sarg::CSR_MEM_MAP_14,                
+                riscv_pkg_sarg::CSR_MEM_MAP_15,
+                riscv_pkg_sarg::CSR_IO_MAP_0,
+                riscv_pkg_sarg::CSR_IO_MAP_1,
+                riscv_pkg_sarg::CSR_IO_MAP_2,
+                riscv_pkg_sarg::CSR_IO_MAP_3,
+                riscv_pkg_sarg::CSR_IO_MAP_4,
+                riscv_pkg_sarg::CSR_IO_MAP_5,
+                riscv_pkg_sarg::CSR_IO_MAP_6,
+                riscv_pkg_sarg::CSR_IO_MAP_7,
+                riscv_pkg_sarg::CSR_IO_MAP_8,
+                riscv_pkg_sarg::CSR_IO_MAP_9,
+                riscv_pkg_sarg::CSR_IO_MAP_10,
+                riscv_pkg_sarg::CSR_IO_MAP_11,
+                riscv_pkg_sarg::CSR_IO_MAP_12,
+                riscv_pkg_sarg::CSR_IO_MAP_13,
+                riscv_pkg_sarg::CSR_IO_MAP_14,
+                riscv_pkg_sarg::CSR_IO_MAP_15,
+                riscv_pkg_sarg::CSR_IRQ_MAP_0,
+                riscv_pkg_sarg::CSR_IRQ_MAP_1,
+                riscv_pkg_sarg::CSR_IRQ_MAP_2,
+                riscv_pkg_sarg::CSR_IRQ_MAP_3,
+                riscv_pkg_sarg::CSR_IRQ_MAP_4,
+                riscv_pkg_sarg::CSR_IRQ_MAP_5,
+                riscv_pkg_sarg::CSR_IRQ_MAP_6,
+                riscv_pkg_sarg::CSR_IRQ_MAP_7,
+                riscv_pkg_sarg::CSR_IRQ_MAP_8,
+                riscv_pkg_sarg::CSR_IRQ_MAP_9,
+                riscv_pkg_sarg::CSR_IRQ_MAP_10,
+                riscv_pkg_sarg::CSR_IRQ_MAP_11,
+                riscv_pkg_sarg::CSR_IRQ_MAP_12,
+                riscv_pkg_sarg::CSR_IRQ_MAP_13,
+                riscv_pkg_sarg::CSR_IRQ_MAP_14,
+                riscv_pkg_sarg::CSR_IRQ_MAP_15,
+                riscv_pkg_sarg::FROM_HOST,
+                riscv_pkg_sarg::CSR_HYPERRAM_CONFIG, 
+                riscv_pkg_sarg::CSR_SPI_CONFIG, 
+                riscv_pkg_sarg::CSR_CNM_CONFIG,
+                riscv_pkg_sarg::TO_HOST,
+                riscv_pkg_sarg::CLEAR_MIP: begin
                         pcr_req_data_o = csr_wdata;
                 end
                 `endif // CONF_SARGANTANA_ENABLE_PCR
 
-                riscv_pkg::CSR_PMPCFG_0:;
-                riscv_pkg::CSR_PMPCFG_1:;
-                riscv_pkg::CSR_PMPCFG_2:;
-                riscv_pkg::CSR_PMPCFG_3:;
+                riscv_pkg_sarg::CSR_PMPCFG_0:;
+                riscv_pkg_sarg::CSR_PMPCFG_1:;
+                riscv_pkg_sarg::CSR_PMPCFG_2:;
+                riscv_pkg_sarg::CSR_PMPCFG_3:;
 
-                riscv_pkg::CSR_PMPADDR_0:;
-                riscv_pkg::CSR_PMPADDR_1:;
-                riscv_pkg::CSR_PMPADDR_2:;
-                riscv_pkg::CSR_PMPADDR_3:;
-                riscv_pkg::CSR_PMPADDR_4:;
-                riscv_pkg::CSR_PMPADDR_5:;
-                riscv_pkg::CSR_PMPADDR_6:;
-                riscv_pkg::CSR_PMPADDR_7:;
-                riscv_pkg::CSR_PMPADDR_8:;
-                riscv_pkg::CSR_PMPADDR_9:;
-                riscv_pkg::CSR_PMPADDR_10:;
-                riscv_pkg::CSR_PMPADDR_11:;
-                riscv_pkg::CSR_PMPADDR_12:;
-                riscv_pkg::CSR_PMPADDR_13:;
-                riscv_pkg::CSR_PMPADDR_14:;
-                riscv_pkg::CSR_PMPADDR_15:;
+                riscv_pkg_sarg::CSR_PMPADDR_0:;
+                riscv_pkg_sarg::CSR_PMPADDR_1:;
+                riscv_pkg_sarg::CSR_PMPADDR_2:;
+                riscv_pkg_sarg::CSR_PMPADDR_3:;
+                riscv_pkg_sarg::CSR_PMPADDR_4:;
+                riscv_pkg_sarg::CSR_PMPADDR_5:;
+                riscv_pkg_sarg::CSR_PMPADDR_6:;
+                riscv_pkg_sarg::CSR_PMPADDR_7:;
+                riscv_pkg_sarg::CSR_PMPADDR_8:;
+                riscv_pkg_sarg::CSR_PMPADDR_9:;
+                riscv_pkg_sarg::CSR_PMPADDR_10:;
+                riscv_pkg_sarg::CSR_PMPADDR_11:;
+                riscv_pkg_sarg::CSR_PMPADDR_12:;
+                riscv_pkg_sarg::CSR_PMPADDR_13:;
+                riscv_pkg_sarg::CSR_PMPADDR_14:;
+                riscv_pkg_sarg::CSR_PMPADDR_15:;
                 default: update_access_exception = 1'b1;
             endcase
         end 
@@ -1156,20 +1156,20 @@ module csr_bsc#(
 
         // mark the floating point extension register as dirty 
         if (def_pkg::FP_PRESENT && (dirty_fp_state_csr)) begin
-            mstatus_d.fs = riscv_pkg::Dirty;
+            mstatus_d.fs = riscv_pkg_sarg::Dirty;
         end
         // hardwire to zero if floating point extension is not present
         else if (!def_pkg::FP_PRESENT) begin
-            mstatus_d.fs = riscv_pkg::Off;
+            mstatus_d.fs = riscv_pkg_sarg::Off;
         end
 
         // mark the vector extension register as dirty 
         if (def_pkg::V_PRESENT && (dirty_v_state_csr)) begin
-            mstatus_d.vs = riscv_pkg::Dirty;
+            mstatus_d.vs = riscv_pkg_sarg::Dirty;
         end
         // hardwire to zero if vector extension is not present
         else if (!def_pkg::V_PRESENT) begin
-            mstatus_d.vs = riscv_pkg::Off;
+            mstatus_d.vs = riscv_pkg_sarg::Off;
         end
 
 
@@ -1186,44 +1186,44 @@ module csr_bsc#(
         interrupt_cause = 64'b0;
         ex_tval = 64'b0;
         // Machine Mode External Interrupt
-        if (mip_q[riscv_pkg::M_EXT_INTERRUPT[5:0]] && mie_q[riscv_pkg::M_EXT_INTERRUPT[5:0]]) begin
-            interrupt_cause = riscv_pkg::M_EXT_INTERRUPT;
+        if (mip_q[riscv_pkg_sarg::M_EXT_INTERRUPT[5:0]] && mie_q[riscv_pkg_sarg::M_EXT_INTERRUPT[5:0]]) begin
+            interrupt_cause = riscv_pkg_sarg::M_EXT_INTERRUPT;
         end
         // Machine Mode Software Interrupt
-        else if (mip_q[riscv_pkg::M_SW_INTERRUPT[5:0]] && mie_q[riscv_pkg::M_SW_INTERRUPT[5:0]]) begin
-            interrupt_cause = riscv_pkg::M_SW_INTERRUPT;
+        else if (mip_q[riscv_pkg_sarg::M_SW_INTERRUPT[5:0]] && mie_q[riscv_pkg_sarg::M_SW_INTERRUPT[5:0]]) begin
+            interrupt_cause = riscv_pkg_sarg::M_SW_INTERRUPT;
         end
         // Machine Timer Interrupt
-        else if (mip_q[riscv_pkg::M_TIMER_INTERRUPT[5:0]] && mie_q[riscv_pkg::M_TIMER_INTERRUPT[5:0]]) begin
-            interrupt_cause = riscv_pkg::M_TIMER_INTERRUPT;
+        else if (mip_q[riscv_pkg_sarg::M_TIMER_INTERRUPT[5:0]] && mie_q[riscv_pkg_sarg::M_TIMER_INTERRUPT[5:0]]) begin
+            interrupt_cause = riscv_pkg_sarg::M_TIMER_INTERRUPT;
         end
         // Supervisor External Interrupt
-        else if (mie_q[riscv_pkg::S_EXT_INTERRUPT[5:0]] && ( (mip_q[riscv_pkg::S_EXT_INTERRUPT[5:0]]) || irq_q[1] ) ) begin
-            interrupt_cause = riscv_pkg::S_EXT_INTERRUPT;
+        else if (mie_q[riscv_pkg_sarg::S_EXT_INTERRUPT[5:0]] && ( (mip_q[riscv_pkg_sarg::S_EXT_INTERRUPT[5:0]]) || irq_q[1] ) ) begin
+            interrupt_cause = riscv_pkg_sarg::S_EXT_INTERRUPT;
         end
         // Supervisor Software Interrupt
-        else if (mie_q[riscv_pkg::S_SW_INTERRUPT[5:0]] && mip_q[riscv_pkg::S_SW_INTERRUPT[5:0]]) begin
-            interrupt_cause = riscv_pkg::S_SW_INTERRUPT;
+        else if (mie_q[riscv_pkg_sarg::S_SW_INTERRUPT[5:0]] && mip_q[riscv_pkg_sarg::S_SW_INTERRUPT[5:0]]) begin
+            interrupt_cause = riscv_pkg_sarg::S_SW_INTERRUPT;
         end
         // Supervisor Timer Interrupt
-        else if (mie_q[riscv_pkg::S_TIMER_INTERRUPT[5:0]] && mip_q[riscv_pkg::S_TIMER_INTERRUPT[5:0]]) begin
-            interrupt_cause = riscv_pkg::S_TIMER_INTERRUPT;
+        else if (mie_q[riscv_pkg_sarg::S_TIMER_INTERRUPT[5:0]] && mip_q[riscv_pkg_sarg::S_TIMER_INTERRUPT[5:0]]) begin
+            interrupt_cause = riscv_pkg_sarg::S_TIMER_INTERRUPT;
         end
         // Local Count Overflow Interrupt
-        else if (mip_q[riscv_pkg::LCOF_INTERRUPT[5:0]] && mie_q[riscv_pkg::LCOF_INTERRUPT[5:0]]) begin
-            interrupt_cause = riscv_pkg::LCOF_INTERRUPT;
+        else if (mip_q[riscv_pkg_sarg::LCOF_INTERRUPT[5:0]] && mie_q[riscv_pkg_sarg::LCOF_INTERRUPT[5:0]]) begin
+            interrupt_cause = riscv_pkg_sarg::LCOF_INTERRUPT;
         end
         
         // if the priv is different of M or the mie is 1, the interrups are enable
-        global_enable = ((mstatus_q.mie && (priv_lvl_o == riscv_pkg::PRIV_LVL_M))
-                                        || (priv_lvl_o != riscv_pkg::PRIV_LVL_M)) && (~debug_mode_en_q) && (~dcsr_q.step);
+        global_enable = ((mstatus_q.mie && (priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_M))
+                                        || (priv_lvl_o != riscv_pkg_sarg::PRIV_LVL_M)) && (~debug_mode_en_q) && (~dcsr_q.step);
 
         if (interrupt_cause[63] && global_enable) begin
             // However, if bit i in mideleg is set, interrupts are considered to be globally enabled if the hart’s current privilege
             // mode equals the delegated privilege mode (S or U) and that mode’s interrupt enable bit
             // (SIE or UIE in mstatus) is set, or if the current privilege mode is less than the delegated privilege mode.
             if (mideleg_q[interrupt_cause[5:0]]) begin
-                if ((mstatus_q.sie && (priv_lvl_q == riscv_pkg::PRIV_LVL_S)) || (priv_lvl_q == riscv_pkg::PRIV_LVL_U)) begin
+                if ((mstatus_q.sie && (priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_S)) || (priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_U)) begin
                     interrupt_d = 1'b1;
                     interrupt_cause_d = interrupt_cause;
                 end
@@ -1247,24 +1247,24 @@ module csr_bsc#(
         // -----------------------
         // update exception CSRs
         // we got an exception update cause, pc and stval register
-        trap_to_priv_lvl = riscv_pkg::PRIV_LVL_M;
+        trap_to_priv_lvl = riscv_pkg_sarg::PRIV_LVL_M;
         // Exception is taken and we are not in debug mode
         // exceptions in debug mode don't update any fields
         
-        if ((((ex_cause_i != riscv_pkg::DEBUG_REQUEST) && ex_i) || csr_xcpt) && (~debug_mode_en_q)) begin
+        if ((((ex_cause_i != riscv_pkg_sarg::DEBUG_REQUEST) && ex_i) || csr_xcpt) && (~debug_mode_en_q)) begin
             // do not flush, flush is reserved for CSR writes with side effects
             flush_o   = 1'b0;
             ex_tval = pc_i;
             //tval is the actual pc except for the data access exeptions
-            if (ex_i && ex_cause_i inside {riscv_pkg::LD_ADDR_MISALIGNED, riscv_pkg::LD_ACCESS_FAULT, 
-                                    riscv_pkg::ST_AMO_ADDR_MISALIGNED, riscv_pkg::ST_AMO_ACCESS_FAULT,
-                                    riscv_pkg::LD_PAGE_FAULT, riscv_pkg::ST_AMO_PAGE_FAULT,
-                                    riscv_pkg::INSTR_PAGE_FAULT, riscv_pkg::INSTR_ADDR_MISALIGNED,
-                                    riscv_pkg::INSTR_ACCESS_FAULT}) begin
+            if (ex_i && ex_cause_i inside {riscv_pkg_sarg::LD_ADDR_MISALIGNED, riscv_pkg_sarg::LD_ACCESS_FAULT, 
+                                    riscv_pkg_sarg::ST_AMO_ADDR_MISALIGNED, riscv_pkg_sarg::ST_AMO_ACCESS_FAULT,
+                                    riscv_pkg_sarg::LD_PAGE_FAULT, riscv_pkg_sarg::ST_AMO_PAGE_FAULT,
+                                    riscv_pkg_sarg::INSTR_PAGE_FAULT, riscv_pkg_sarg::INSTR_ADDR_MISALIGNED,
+                                    riscv_pkg_sarg::INSTR_ACCESS_FAULT}) begin
                 ex_tval = ex_origin_i;
-            end else if ((ex_i && (ex_cause_i == riscv_pkg::ILLEGAL_INSTR)) || (csr_xcpt && (csr_xcpt_cause == riscv_pkg::ILLEGAL_INSTR))) begin
+            end else if ((ex_i && (ex_cause_i == riscv_pkg_sarg::ILLEGAL_INSTR)) || (csr_xcpt && (csr_xcpt_cause == riscv_pkg_sarg::ILLEGAL_INSTR))) begin
                 ex_tval = ex_origin_i;
-	        end else if (csr_xcpt && (csr_xcpt_cause == riscv_pkg::BREAKPOINT)) begin
+	        end else if (csr_xcpt && (csr_xcpt_cause == riscv_pkg_sarg::BREAKPOINT)) begin
                 ex_tval = pc_i;
             end else begin
                 ex_tval = 64'b0;
@@ -1279,11 +1279,11 @@ module csr_bsc#(
                 (~csr_xcpt_cause[63] && medeleg_q[csr_xcpt_cause[5:0]])))) begin
                 // traps never transition from a more-privileged mode to a less privileged mode
                 // so if we are already in M mode, stay there
-                trap_to_priv_lvl = (priv_lvl_o == riscv_pkg::PRIV_LVL_M) ? riscv_pkg::PRIV_LVL_M : riscv_pkg::PRIV_LVL_S;
+                trap_to_priv_lvl = (priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_M) ? riscv_pkg_sarg::PRIV_LVL_M : riscv_pkg_sarg::PRIV_LVL_S;
             end
 
             // trap to supervisor mode
-            if (trap_to_priv_lvl == riscv_pkg::PRIV_LVL_S) begin
+            if (trap_to_priv_lvl == riscv_pkg_sarg::PRIV_LVL_S) begin
                 // update sstatus
                 mstatus_d.sie  = 1'b0;
                 mstatus_d.spie = mstatus_q.sie;
@@ -1327,26 +1327,26 @@ module csr_bsc#(
             // restore the previous privilege level
             priv_lvl_d     = mstatus_q.mpp;
             // set mpp to user mode
-            mstatus_d.mpp  = riscv_pkg::PRIV_LVL_U;
+            mstatus_d.mpp  = riscv_pkg_sarg::PRIV_LVL_U;
             // set mpie to 1
             mstatus_d.mpie = 1'b1;
             // clear mprv if returning from machine mode to any other mode
-            if ((priv_lvl_d != riscv_pkg::PRIV_LVL_M) && (priv_lvl_d != priv_lvl_q)) begin
+            if ((priv_lvl_d != riscv_pkg_sarg::PRIV_LVL_M) && (priv_lvl_d != priv_lvl_q)) begin
                 mstatus_d.mprv = 1'b0;
             end
-        end else if (sret && !((priv_lvl_q == riscv_pkg::PRIV_LVL_S) && (mstatus_q.tsr == 1'b1))) begin
+        end else if (sret && !((priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_S) && (mstatus_q.tsr == 1'b1))) begin
             // return from exception, IF doesn't care from where we are returning
             eret_o = 1'b1;
             // return the previous supervisor interrupt enable flag
             mstatus_d.sie  = mstatus_q.spie;
             // restore the previous privilege level
-            priv_lvl_d     = riscv_pkg::priv_lvl_t'({1'b0, mstatus_q.spp});
+            priv_lvl_d     = riscv_pkg_sarg::priv_lvl_t'({1'b0, mstatus_q.spp});
             // set spp to user mode
             mstatus_d.spp  = 1'b0;
             // set spie to 1
             mstatus_d.spie = 1'b1;
             // clear mprv if returning from machine mode to any other mode
-            if ((priv_lvl_d != riscv_pkg::PRIV_LVL_M) && (priv_lvl_d != priv_lvl_q)) begin
+            if ((priv_lvl_d != riscv_pkg_sarg::PRIV_LVL_M) && (priv_lvl_d != priv_lvl_q)) begin
                 mstatus_d.mprv = 1'b0;
             end
         end
@@ -1356,7 +1356,7 @@ module csr_bsc#(
         // ------------------------------
         // Set the address translation at which the load and stores should occur
         // we can use the previous values since changing the address translation will always involve a pipeline flush
-        if (mprv && (satp_q.mode == def_pkg::MODE_SV39) && (mstatus_q.mpp != riscv_pkg::PRIV_LVL_M) && ((~debug_mode_en_q) || dcsr_q.mprven)) begin
+        if (mprv && (satp_q.mode == def_pkg::MODE_SV39) && (mstatus_q.mpp != riscv_pkg_sarg::PRIV_LVL_M) && ((~debug_mode_en_q) || dcsr_q.mprven)) begin
             en_ld_st_translation_d = 1'b1;
         end else begin // otherwise we go with the regular settings
             en_ld_st_translation_d = en_translation_o;
@@ -1371,14 +1371,14 @@ module csr_bsc#(
         debug_ebreak_d = 1'b0;
 
         if (insn_break & (~debug_mode_en_q)) begin
-            if (((priv_lvl_q == riscv_pkg::PRIV_LVL_M) && (dcsr_q.ebreakm)) || 
-                ((priv_lvl_q == riscv_pkg::PRIV_LVL_S) && (dcsr_q.ebreaks)) ||
-                ((priv_lvl_q == riscv_pkg::PRIV_LVL_U) && (dcsr_q.ebreaku))) begin
+            if (((priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_M) && (dcsr_q.ebreakm)) || 
+                ((priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_S) && (dcsr_q.ebreaks)) ||
+                ((priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_U) && (dcsr_q.ebreaku))) begin
                 dcsr_d.cause = 3'h1;
                 dcsr_d.prv = priv_lvl_q;
                 dpc_d = pc_i; // pc of the ebreak_instruction
                 debug_mode_en_d = 1'b1;
-                priv_lvl_d = riscv_pkg::PRIV_LVL_M;
+                priv_lvl_d = riscv_pkg_sarg::PRIV_LVL_M;
                 debug_ebreak_d = 1'b1;
             end
         end else if (debug_halt_ack_i) begin
@@ -1386,7 +1386,7 @@ module csr_bsc#(
             dcsr_d.prv = priv_lvl_q;
             dpc_d = pc_i; // pc of the next instruction to be executed
             debug_mode_en_d = 1'b1;
-            priv_lvl_d = riscv_pkg::PRIV_LVL_M;
+            priv_lvl_d = riscv_pkg_sarg::PRIV_LVL_M;
         end else if ((~debug_mode_en_q) & dcsr_q.step & ((|retire_i)| ex_i)) begin
             if ( ex_i | csr_xcpt) begin
                 dpc_d = trap_vector_base;
@@ -1403,12 +1403,12 @@ module csr_bsc#(
             end
             dcsr_d.cause = 3'h4;
             debug_mode_en_d = 1'b1;
-            priv_lvl_d = riscv_pkg::PRIV_LVL_M;
+            priv_lvl_d = riscv_pkg_sarg::PRIV_LVL_M;
             debug_ebreak_d = 1'b1;
         end else if (debug_resume_ack_i & debug_mode_en_q) begin
             eret_o = 1'b1;
             priv_lvl_d = dcsr_q.prv;
-            if (dcsr_q.prv != riscv_pkg::PRIV_LVL_M) begin
+            if (dcsr_q.prv != riscv_pkg_sarg::PRIV_LVL_M) begin
                 mstatus_d.mprv = 1'b0;
             end
             debug_mode_en_d = 1'b0;
@@ -1466,26 +1466,26 @@ module csr_bsc#(
         // if we are reading or writing, check for the correct privilege level this has
         // precedence over interrupts
         if (rw_cmd_i inside {4'b0001, 4'b0010, 4'b0011, 4'b0101, 4'b1000}) begin // inside of: rw, set, clear, read, write
-            if ((riscv_pkg::priv_lvl_t'(priv_lvl_o & csr_addr.csr_decode.priv_lvl) != csr_addr.csr_decode.priv_lvl)) begin
+            if ((riscv_pkg_sarg::priv_lvl_t'(priv_lvl_o & csr_addr.csr_decode.priv_lvl) != csr_addr.csr_decode.priv_lvl)) begin
                 privilege_violation = 1'b1;
             end
             // check access to debug mode only CSRs 
             if ((rw_addr_i[11:4] == 8'h7b) && (~debug_mode_en_q)) begin
                 privilege_violation = 1'b1;
             end
-            if (csr_addr.address inside {[riscv_pkg::CSR_CYCLE:riscv_pkg::CSR_HPM_COUNTER_31]}) begin
+            if (csr_addr.address inside {[riscv_pkg_sarg::CSR_CYCLE:riscv_pkg_sarg::CSR_HPM_COUNTER_31]}) begin
                 unique case (priv_lvl_o)
-                    riscv_pkg::PRIV_LVL_M: privilege_violation = 1'b0;
-                    riscv_pkg::PRIV_LVL_S: privilege_violation = ~mcounteren_q[csr_addr.address[4:0]];
-                    riscv_pkg::PRIV_LVL_U: privilege_violation = ~mcounteren_q[csr_addr.address[4:0]] & ~scounteren_q[csr_addr.address[4:0]];
+                    riscv_pkg_sarg::PRIV_LVL_M: privilege_violation = 1'b0;
+                    riscv_pkg_sarg::PRIV_LVL_S: privilege_violation = ~mcounteren_q[csr_addr.address[4:0]];
+                    riscv_pkg_sarg::PRIV_LVL_U: privilege_violation = ~mcounteren_q[csr_addr.address[4:0]] & ~scounteren_q[csr_addr.address[4:0]];
                     default: privilege_violation = 1'b1;
                 endcase
             end
         end
         //checks the level of the system instruction or sfence with tvm = 1 or sret and tsr = 1
         if ((system_insn && !priv_sufficient) || 
-            ((insn_sfence_vm && (priv_lvl_q == riscv_pkg::PRIV_LVL_S)) && (mstatus_q.tvm == 1'b1)) || 
-            ((insn_sret && (priv_lvl_q == riscv_pkg::PRIV_LVL_S)) && (mstatus_q.tsr == 1'b1))) begin
+            ((insn_sfence_vm && (priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_S)) && (mstatus_q.tvm == 1'b1)) || 
+            ((insn_sret && (priv_lvl_q == riscv_pkg_sarg::PRIV_LVL_S)) && (mstatus_q.tsr == 1'b1))) begin
             privilege_violation = 1'b1;
         end
     end
@@ -1501,17 +1501,17 @@ module csr_bsc#(
             vlmax = ((VLEN_V << vtype_new[2:0]) >> 3) >> vtype_new[5:3];
         end else begin
             case(vtype_new[2:0])
-                3'b101:  vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_new[5:3]) >> 3;
-                3'b110:  vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_new[5:3]) >> 2;
-                3'b111:  vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_new[5:3]) >> 1;
-                default: vlmax = ((riscv_pkg::VLEN >> 3) >> vtype_new[5:3]);
+                3'b101:  vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_new[5:3]) >> 3;
+                3'b110:  vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_new[5:3]) >> 2;
+                3'b111:  vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_new[5:3]) >> 1;
+                default: vlmax = ((riscv_pkg_sarg::VLEN >> 3) >> vtype_new[5:3]);
             endcase
         end
 
         update_access_exception_vs = 1'b0;
         if (vsetvl_insn) begin
 
-            if ((mstatus_q.vs == riscv_pkg::Off)) begin
+            if ((mstatus_q.vs == riscv_pkg_sarg::Off)) begin
                 update_access_exception_vs = 1'b1;
                 // default, keeps the old value
                 vl_d = vl_q;
@@ -1592,25 +1592,25 @@ module csr_bsc#(
         // we got an exception in one of the processes above
         // throw an illegal instruction exception
         if (update_access_exception || update_access_exception_vs || read_access_exception) begin
-            csr_xcpt_cause = riscv_pkg::ILLEGAL_INSTR;
+            csr_xcpt_cause = riscv_pkg_sarg::ILLEGAL_INSTR;
             // we don't set the tval field as this will be set by the commit stage
             // this spares the extra wiring from commit to CSR and back to commit
             csr_xcpt = 1'b1;
         end else if (privilege_violation) begin
-          csr_xcpt_cause = riscv_pkg::ILLEGAL_INSTR;
+          csr_xcpt_cause = riscv_pkg_sarg::ILLEGAL_INSTR;
           csr_xcpt = 1'b1;
         end else if (insn_call) begin
-            csr_xcpt_cause = riscv_pkg::USER_ECALL + priv_lvl_q;
+            csr_xcpt_cause = riscv_pkg_sarg::USER_ECALL + priv_lvl_q;
             csr_xcpt = 1'b1;
         end else if (insn_break & (~debug_mode_en_q)) begin
-            if (((priv_lvl_o == riscv_pkg::PRIV_LVL_M) && (~dcsr_q.ebreakm)) || 
-                ((priv_lvl_o == riscv_pkg::PRIV_LVL_S) && (~dcsr_q.ebreaks)) ||
-                ((priv_lvl_o == riscv_pkg::PRIV_LVL_U) && (~dcsr_q.ebreaku))) begin
-                csr_xcpt_cause = riscv_pkg::BREAKPOINT;
+            if (((priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_M) && (~dcsr_q.ebreakm)) || 
+                ((priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_S) && (~dcsr_q.ebreaks)) ||
+                ((priv_lvl_o == riscv_pkg_sarg::PRIV_LVL_U) && (~dcsr_q.ebreaku))) begin
+                csr_xcpt_cause = riscv_pkg_sarg::BREAKPOINT;
                 csr_xcpt = 1'b1;
             end
         end else if (insn_wfi && mstatus_q.tw) begin
-            csr_xcpt_cause = riscv_pkg::ILLEGAL_INSTR;
+            csr_xcpt_cause = riscv_pkg_sarg::ILLEGAL_INSTR;
             csr_xcpt = 1'b1;
         end
     end
@@ -1681,7 +1681,7 @@ module csr_bsc#(
         trap_vector_base[7:2] = ((mtvec_q[1:0] == 2'b0) || csr_xcpt || !ex_cause_i[63]) ? mtvec_q[7:2] : trunc_sum_6bits(mtvec_q[7:2] + ex_cause_i[5:0]);
         trap_vector_base[1:0] = 2'b0;
         // output user mode stvec
-        if (trap_to_priv_lvl == riscv_pkg::PRIV_LVL_S) begin
+        if (trap_to_priv_lvl == riscv_pkg_sarg::PRIV_LVL_S) begin
             // vectorized trap addres
             trap_vector_base[63:8] = stvec_q[63:8];
             trap_vector_base[7:2] = ((stvec_q[1:0] == 2'b0) || csr_xcpt || !ex_cause_i[63]) ? stvec_q[7:2] : trunc_sum_6bits(mtvec_q[7:2] + ex_cause_i[5:0]);
@@ -1730,11 +1730,11 @@ module csr_bsc#(
 	end else begin
 		r_data_core_o = csr_rdata;
         	unique case (csr_addr.address)
-        	    riscv_pkg::CSR_MIP: r_data_core_o = csr_rdata | ({63'b0, irq_q[1]} << riscv_pkg::IRQ_S_EXT);
+        	    riscv_pkg_sarg::CSR_MIP: r_data_core_o = csr_rdata | ({63'b0, irq_q[1]} << riscv_pkg_sarg::IRQ_S_EXT);
         	    // in supervisor mode we also need to check whether we delegated this bit
-        	    riscv_pkg::CSR_SIP: begin
+        	    riscv_pkg_sarg::CSR_SIP: begin
         	        r_data_core_o = csr_rdata
-        	                    | ({63'b0, (irq_q[1] & mideleg_q[riscv_pkg::IRQ_S_EXT])} << riscv_pkg::IRQ_S_EXT);
+        	                    | ({63'b0, (irq_q[1] & mideleg_q[riscv_pkg_sarg::IRQ_S_EXT])} << riscv_pkg_sarg::IRQ_S_EXT);
         	    end
                 default:;
                 endcase
@@ -1757,7 +1757,7 @@ module csr_bsc#(
     assign satp_ppn_o       = satp_q.ppn[PPN_WIDTH-1:0];
 
     // we support bare memory addressing and SV39
-    assign en_translation_o = ((satp_q.mode == 4'h8) && (priv_lvl_o != riscv_pkg::PRIV_LVL_M))
+    assign en_translation_o = ((satp_q.mode == 4'h8) && (priv_lvl_o != riscv_pkg_sarg::PRIV_LVL_M))
                               ? 1'b1
                               : 1'b0;
 
@@ -1772,7 +1772,7 @@ module csr_bsc#(
     // sequential process
     always_ff @(posedge clk_i, negedge rstn_i) begin
         if (!rstn_i) begin
-            priv_lvl_q             <= riscv_pkg::PRIV_LVL_M;
+            priv_lvl_q             <= riscv_pkg_sarg::PRIV_LVL_M;
             // floating-point registers
             fcsr_q                 <= 64'b0;
             // machine mode registers
@@ -1906,8 +1906,8 @@ module csr_bsc#(
         `ifdef LAGARTO_KA
         logic csr_we_q1,csr_we_q2,csr_we_q3;
         logic [1:0] retire_q1,fcsr_flags_valid_q1,fcsr_flags_valid_q2,fcsr_flags_valid_q3;
-        riscv_pkg::csr_t csr_addr_q1, csr_addr_q2 ,csr_addr_q3;
-        riscv_pkg::status_rv64_t  mstatus_q1,  mstatus_q2,mstatus_q3;
+        riscv_pkg_sarg::csr_t csr_addr_q1, csr_addr_q2 ,csr_addr_q3;
+        riscv_pkg_sarg::status_rv64_t  mstatus_q1,  mstatus_q2,mstatus_q3;
         logic [4:0] fcsr_flags_bits_q1,fcsr_flags_bits_q2,fcsr_flags_bits_q3,fflags_q1,fflags_q2,fflags_q3;
 
         mvp_dpreg  #(1)       _fcsr_flags_valid_q1_  (clk_i, rstn_i, fcsr_flags_valid_i,    fcsr_flags_valid_q1);
@@ -1937,10 +1937,10 @@ module csr_bsc#(
         mvp_dpreg  #(2)       _csr_retire_q1_  (clk_i, rstn_i, retire_i, retire_q1);
         always_ff @(negedge clk_i) begin
             automatic logic [63:0] mstatus_fix, mstatus_clear ,mstatus_set;
-            mstatus_clear = riscv_pkg::MSTATUS_UXL | riscv_pkg::MSTATUS_SXL | riscv_pkg::MSTATUS64_SD;
-            mstatus_set =   ((mstatus_d.xs == riscv_pkg::Dirty) | (mstatus_d.fs == riscv_pkg::Dirty))<<63 |
-                            riscv_pkg::XLEN_64 << 32|
-                            riscv_pkg::XLEN_64 << 34;
+            mstatus_clear = riscv_pkg_sarg::MSTATUS_UXL | riscv_pkg_sarg::MSTATUS_SXL | riscv_pkg_sarg::MSTATUS64_SD;
+            mstatus_set =   ((mstatus_d.xs == riscv_pkg_sarg::Dirty) | (mstatus_d.fs == riscv_pkg_sarg::Dirty))<<63 |
+                            riscv_pkg_sarg::XLEN_64 << 32|
+                            riscv_pkg_sarg::XLEN_64 << 34;
             mstatus_fix = (mstatus_d & ~mstatus_clear) | mstatus_set;
 
             if (rstn_i & (|retire_q1)) begin
@@ -1948,26 +1948,26 @@ module csr_bsc#(
 
                 // For some reason mstatus is updated in multiple cycles, but at commit we need the value that will be set later
                 // This might break in some random tests.....
-                if (mstatus_q3 != mstatus_fix) csr_change(riscv_pkg::CSR_MSTATUS, mstatus_fix);
+                if (mstatus_q3 != mstatus_fix) csr_change(riscv_pkg_sarg::CSR_MSTATUS, mstatus_fix);
 
-                if (fcsr_flags_valid_q1 && fcsr_flags_bits_q1) csr_change(riscv_pkg::CSR_FFLAGS, fflags_q1);
+                if (fcsr_flags_valid_q1 && fcsr_flags_bits_q1) csr_change(riscv_pkg_sarg::CSR_FFLAGS, fflags_q1);
 
                 // CSRs which only change when written to
                 if (csr_we_q3) begin
                     case(csr_addr_q3)
-                        riscv_pkg::CSR_MSTATUS, riscv_pkg::CSR_SSTATUS:
+                        riscv_pkg_sarg::CSR_MSTATUS, riscv_pkg_sarg::CSR_SSTATUS:
                             ; // Covered by previous mstatus check
-                        riscv_pkg::CSR_MTVEC: csr_change(csr_addr_q3, mtvec_d);
-                        riscv_pkg::CSR_MEPC: csr_change(csr_addr_q3, mepc_d);
-                        riscv_pkg::CSR_MCAUSE: csr_change(csr_addr_q3, mcause_d);
-                        riscv_pkg::CSR_MSCRATCH: csr_change(csr_addr_q3, mscratch_d);
-                        riscv_pkg::CSR_MEDELEG: csr_change(csr_addr_q3, medeleg_d);
-                        riscv_pkg::CSR_MIE: csr_change(csr_addr_q3, mie_d);
-                        riscv_pkg::CSR_SATP: csr_change(csr_addr_q3, satp_d);
-                        riscv_pkg::CSR_STVEC: csr_change(csr_addr_q3, stvec_d);
-                        riscv_pkg::CSR_SSCRATCH: csr_change(csr_addr_q3, sscratch_d);
-                        riscv_pkg::CSR_SEPC: csr_change(csr_addr_q3, sepc_d);
-                        riscv_pkg::CSR_MISA: csr_change(csr_addr_q3, def_pkg::ISA_CODE);
+                        riscv_pkg_sarg::CSR_MTVEC: csr_change(csr_addr_q3, mtvec_d);
+                        riscv_pkg_sarg::CSR_MEPC: csr_change(csr_addr_q3, mepc_d);
+                        riscv_pkg_sarg::CSR_MCAUSE: csr_change(csr_addr_q3, mcause_d);
+                        riscv_pkg_sarg::CSR_MSCRATCH: csr_change(csr_addr_q3, mscratch_d);
+                        riscv_pkg_sarg::CSR_MEDELEG: csr_change(csr_addr_q3, medeleg_d);
+                        riscv_pkg_sarg::CSR_MIE: csr_change(csr_addr_q3, mie_d);
+                        riscv_pkg_sarg::CSR_SATP: csr_change(csr_addr_q3, satp_d);
+                        riscv_pkg_sarg::CSR_STVEC: csr_change(csr_addr_q3, stvec_d);
+                        riscv_pkg_sarg::CSR_SSCRATCH: csr_change(csr_addr_q3, sscratch_d);
+                        riscv_pkg_sarg::CSR_SEPC: csr_change(csr_addr_q3, sepc_d);
+                        riscv_pkg_sarg::CSR_MISA: csr_change(csr_addr_q3, def_pkg::ISA_CODE);
                         default: csr_change(csr_addr_q3, csr_wdata);
                     endcase
                 end
@@ -1977,10 +1977,10 @@ module csr_bsc#(
         always_ff @(negedge clk_i) begin
             automatic logic [63:0] mstatus_fix, mstatus_clear ,mstatus_set;
 
-            mstatus_clear = riscv_pkg::MSTATUS_UXL | riscv_pkg::MSTATUS_SXL | riscv_pkg::MSTATUS64_SD;
-            mstatus_set =   ((mstatus_d.xs == riscv_pkg::Dirty) | (mstatus_d.fs == riscv_pkg::Dirty) | (mstatus_d.vs == riscv_pkg::Dirty))<<63 |
-                            riscv_pkg::XLEN_64 << 32|
-                            riscv_pkg::XLEN_64 << 34;
+            mstatus_clear = riscv_pkg_sarg::MSTATUS_UXL | riscv_pkg_sarg::MSTATUS_SXL | riscv_pkg_sarg::MSTATUS64_SD;
+            mstatus_set =   ((mstatus_d.xs == riscv_pkg_sarg::Dirty) | (mstatus_d.fs == riscv_pkg_sarg::Dirty) | (mstatus_d.vs == riscv_pkg_sarg::Dirty))<<63 |
+                            riscv_pkg_sarg::XLEN_64 << 32|
+                            riscv_pkg_sarg::XLEN_64 << 34;
             mstatus_fix = (mstatus_d & ~mstatus_clear) | mstatus_set;
             `ifdef LOX
             if (rstn_i & (|torture_dpi_we_i)) begin
@@ -1991,27 +1991,27 @@ module csr_bsc#(
 
                 // For some reason mstatus is updated in multiple cycles, but at commit we need the value that will be set later
                 // This might break in some random tests.....
-                if (mstatus_q != mstatus_fix) csr_change(riscv_pkg::CSR_MSTATUS, mstatus_fix);
+                if (mstatus_q != mstatus_fix) csr_change(riscv_pkg_sarg::CSR_MSTATUS, mstatus_fix);
 
-                if (fcsr_flags_valid_i && fcsr_flags_bits_i) csr_change(riscv_pkg::CSR_FFLAGS, fcsr_d.fflags);
+                if (fcsr_flags_valid_i && fcsr_flags_bits_i) csr_change(riscv_pkg_sarg::CSR_FFLAGS, fcsr_d.fflags);
 
                 // CSRs which only change when written to
                 if (csr_we) begin
                     case(csr_addr)
-                        riscv_pkg::CSR_MSTATUS, riscv_pkg::CSR_SSTATUS:
+                        riscv_pkg_sarg::CSR_MSTATUS, riscv_pkg_sarg::CSR_SSTATUS:
                             ; // Covered by previous mstatus check
-                        riscv_pkg::CSR_MTVEC: csr_change(csr_addr, mtvec_d);
-                        riscv_pkg::CSR_MEPC: csr_change(csr_addr, mepc_d);
-                        riscv_pkg::CSR_MCAUSE: csr_change(csr_addr, mcause_d);
-                        riscv_pkg::CSR_MSCRATCH: csr_change(csr_addr, mscratch_d);
-                        riscv_pkg::CSR_MEDELEG: csr_change(csr_addr, medeleg_d);
-                        riscv_pkg::CSR_SIE,
-                        riscv_pkg::CSR_MIE: csr_change(riscv_pkg::CSR_MIE, mie_d);
-                        riscv_pkg::CSR_SATP: csr_change(csr_addr, satp_d);
-                        riscv_pkg::CSR_STVEC: csr_change(csr_addr, stvec_d);
-                        riscv_pkg::CSR_SSCRATCH: csr_change(csr_addr, sscratch_d);
-                        riscv_pkg::CSR_SEPC: csr_change(csr_addr, sepc_d);
-                        riscv_pkg::CSR_MISA: csr_change(csr_addr, def_pkg::ISA_CODE);
+                        riscv_pkg_sarg::CSR_MTVEC: csr_change(csr_addr, mtvec_d);
+                        riscv_pkg_sarg::CSR_MEPC: csr_change(csr_addr, mepc_d);
+                        riscv_pkg_sarg::CSR_MCAUSE: csr_change(csr_addr, mcause_d);
+                        riscv_pkg_sarg::CSR_MSCRATCH: csr_change(csr_addr, mscratch_d);
+                        riscv_pkg_sarg::CSR_MEDELEG: csr_change(csr_addr, medeleg_d);
+                        riscv_pkg_sarg::CSR_SIE,
+                        riscv_pkg_sarg::CSR_MIE: csr_change(riscv_pkg_sarg::CSR_MIE, mie_d);
+                        riscv_pkg_sarg::CSR_SATP: csr_change(csr_addr, satp_d);
+                        riscv_pkg_sarg::CSR_STVEC: csr_change(csr_addr, stvec_d);
+                        riscv_pkg_sarg::CSR_SSCRATCH: csr_change(csr_addr, sscratch_d);
+                        riscv_pkg_sarg::CSR_SEPC: csr_change(csr_addr, sepc_d);
+                        riscv_pkg_sarg::CSR_MISA: csr_change(csr_addr, def_pkg::ISA_CODE);
                         default: csr_change(csr_addr, csr_wdata);
                     endcase
                 end

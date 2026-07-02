@@ -29,17 +29,17 @@
 `define HPDCACHE_DECL_MEM_REQ_T(__addr_t, __id_t) \
     struct packed { \
         __addr_t                              mem_req_addr; \
-        hpdcache_pkg::hpdcache_mem_len_t      mem_req_len; \
-        hpdcache_pkg::hpdcache_mem_size_t     mem_req_size; \
+        hpdcache_pkg_sarg::hpdcache_mem_len_t      mem_req_len; \
+        hpdcache_pkg_sarg::hpdcache_mem_size_t     mem_req_size; \
         __id_t                                mem_req_id; \
-        hpdcache_pkg::hpdcache_mem_command_e  mem_req_command; \
-        hpdcache_pkg::hpdcache_mem_atomic_e   mem_req_atomic; \
+        hpdcache_pkg_sarg::hpdcache_mem_command_e  mem_req_command; \
+        hpdcache_pkg_sarg::hpdcache_mem_atomic_e   mem_req_atomic; \
         logic                                 mem_req_cacheable; \
     }
 
 `define HPDCACHE_DECL_MEM_RESP_R_T(__id_t, __data_t) \
     struct packed { \
-        hpdcache_pkg::hpdcache_mem_error_e    mem_resp_r_error; \
+        hpdcache_pkg_sarg::hpdcache_mem_error_e    mem_resp_r_error; \
         __id_t                                mem_resp_r_id; \
         __data_t                              mem_resp_r_data; \
         logic                                 mem_resp_r_last; \
@@ -55,7 +55,7 @@
 `define HPDCACHE_DECL_MEM_RESP_W_T(__id_t) \
     struct packed { \
         logic                                 mem_resp_w_is_atomic; \
-        hpdcache_pkg::hpdcache_mem_error_e    mem_resp_w_error; \
+        hpdcache_pkg_sarg::hpdcache_mem_error_e    mem_resp_w_error; \
         __id_t                                mem_resp_w_id; \
     }
 
@@ -81,15 +81,15 @@
     struct packed { \
         __offset_t                        addr_offset; \
         __data_t                          wdata; \
-        hpdcache_pkg::hpdcache_req_op_t   op; \
+        hpdcache_pkg_sarg::hpdcache_req_op_t   op; \
         __be_t                            be; \
-        hpdcache_pkg::hpdcache_req_size_t size; \
+        hpdcache_pkg_sarg::hpdcache_req_size_t size; \
         __sid_t                           sid; \
         __tid_t                           tid; \
         logic                             need_rsp; \
         logic                             phys_indexed; \
         __tag_t                           addr_tag; \
-        hpdcache_pkg::hpdcache_pma_t      pma; \
+        hpdcache_pkg_sarg::hpdcache_pma_t      pma; \
     }
 
 `define HPDCACHE_TYPEDEF_REQ_ATTR_T(__offset_t, __word_t, __word_be_t, __data_t, __be_t, __sid_t, __tid_t, __tag_t, __params) \

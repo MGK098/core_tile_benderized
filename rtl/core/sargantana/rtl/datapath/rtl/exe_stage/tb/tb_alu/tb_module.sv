@@ -57,7 +57,7 @@ reg[64*8:0] tb_test_name;
 // Module
 //-----------------------------
 
-alu module_inst (
+alu_sarg module_inst (
     .data_rs1_i(tb_data_rs1_i),
     .data_rs2_i(tb_data_rs2_i),
     .instruction_i(tb_instr_i),

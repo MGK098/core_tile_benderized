@@ -19,7 +19,7 @@
  */
 
 module vagu
-    import riscv_pkg::*, drac_pkg::*;
+    import riscv_pkg_sarg::*, drac_pkg::*;
 #(
     parameter DCACHE_RESP_DATA_WIDTH = 128,
     parameter logic [6:0] DCACHE_RESP_MAXELEM = DCACHE_RESP_DATA_WIDTH >> 3,

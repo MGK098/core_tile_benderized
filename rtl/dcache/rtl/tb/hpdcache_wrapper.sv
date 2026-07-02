@@ -25,7 +25,7 @@
 `include "hpdcache_typedef.svh"
 
 module hpdcache_wrapper
-import hpdcache_pkg::*;
+import hpdcache_pkg_sarg::*;
     //  Parameters
     //  {{{
 #(
@@ -289,7 +289,7 @@ import hpdcache_pkg::*;
         end
     end
 
-    hpdcache #(
+    hpdcache_sarg #(
         .HPDcacheCfg                       (Cfg),
         .wbuf_timecnt_t                    (wbuf_timecnt_t),
         .hpdcache_tag_t                    (hpdcache_tag_t),
@@ -380,8 +380,8 @@ import hpdcache_pkg::*;
     //  {{{
     //  pragma translate_off
     wbuf_not_ready_cover: cover property (
-        @(posedge clk_i) i_hpdcache.hpdcache_ctrl_i.wbuf_write_o &
-                        ~i_hpdcache.hpdcache_ctrl_i.wbuf_write_ready_i);
+        @(posedge clk_i) i_hpdcache.hpdcache_ctrl_sarg_i.wbuf_write_o &
+                        ~i_hpdcache.hpdcache_ctrl_sarg_i.wbuf_write_ready_i);
     //  pragma translate_on
     //  }}}
 

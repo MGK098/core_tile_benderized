@@ -20,7 +20,7 @@
 
 module free_list
     import drac_pkg::*;
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 #(
     parameter NUM_ENTRIES = 32, // Number of available entries in the free list
     parameter ZERO_IS_FREEABLE = 1, // Register 0 can be freed

@@ -23,7 +23,7 @@
  *  Description   : Blackbox model of a 1RW SRAM with write byte enable
  *  History       :
  */
-(* black_box *) module hpdcache_sram_wbyteenable_1rw
+(* black_box *) module hpdcache_sram_sarg_wbyteenable_sarg_1rw_sarg
 #(
     parameter int unsigned ADDR_SIZE = 0,
     parameter int unsigned DATA_SIZE = 0,

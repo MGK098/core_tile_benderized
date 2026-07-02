@@ -18,7 +18,7 @@
  * under the License.
  */
  import drac_pkg::*;
- import riscv_pkg::*;
+ import riscv_pkg_sarg::*;
  
  module score_board_simd (
      input logic                    clk_i,

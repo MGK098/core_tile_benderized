@@ -23,8 +23,8 @@
  *  Description   : Interface adapter for the CMO interface of the CVA6 core
  *  History       :
  */
-module cva6_hpdcache_cmo_if_adapter
-import hpdcache_pkg::*;
+module cva6_hpdcache_cmo_sarg_if_adapter
+import hpdcache_pkg_sarg::*;
 
 //  Parameters
 //  {{{
@@ -42,7 +42,7 @@ import hpdcache_pkg::*;
   input  logic                            rst_ni,
 
   //  Port ID
-  input  hpdcache_pkg::hpdcache_req_sid_t dcache_req_sid_i,
+  input  hpdcache_pkg_sarg::hpdcache_req_sid_t dcache_req_sid_i,
 
   //  Request/response ports from/to the CVA6 core
   input  cmo_req_t                        cva6_cmo_req_i,
@@ -51,11 +51,11 @@ import hpdcache_pkg::*;
   //  Request port to the L1 Dcache
   output logic                            dcache_req_valid_o,
   input  logic                            dcache_req_ready_i,
-  output hpdcache_pkg::hpdcache_req_t     dcache_req_o,
+  output hpdcache_pkg_sarg::hpdcache_req_t     dcache_req_o,
 
   //  Response port from the L1 Dcache
   input  logic                            dcache_rsp_valid_i,
-  input  hpdcache_pkg::hpdcache_rsp_t     dcache_rsp_i
+  input  hpdcache_pkg_sarg::hpdcache_rsp_t     dcache_rsp_i
 );
 //  }}}
 
@@ -68,7 +68,7 @@ import hpdcache_pkg::*;
   } forward_state_q, forward_state_d;
 
   logic forward_cmo;
-  hpdcache_pkg::hpdcache_req_t dcache_req_cmo;
+  hpdcache_pkg_sarg::hpdcache_req_t dcache_req_cmo;
   logic [ariane_pkg::TRANS_ID_BITS-1:0] cmo_tid_q, cmo_tid_d;
   logic cmo_ack;
   logic stall;

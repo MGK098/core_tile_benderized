@@ -64,7 +64,7 @@ module hpdcache_l15_resp_demux
   assign mem_resp_demux_sel = mem_sel_i;
 
   //  Forward the response to the corresponding output port
-  hpdcache_demux #(
+  hpdcache_demux_sarg #(
       .NOUTPUT        (N),
       .DATA_WIDTH     (1),
       .ONE_HOT_SEL    (0)
@@ -74,7 +74,7 @@ module hpdcache_l15_resp_demux
       .data_o         (mem_resp_demux_valid)
   );
 
-  hpdcache_demux #(
+  hpdcache_demux_sarg #(
       .NOUTPUT        (N),
       .DATA_WIDTH     ($bits(resp_t)),
       .ONE_HOT_SEL    (0)
@@ -84,7 +84,7 @@ module hpdcache_l15_resp_demux
       .data_o         (mem_resp_demux)
   );
 
-  hpdcache_mux #(
+  hpdcache_mux_sarg #(
       .NINPUT         (N),
       .DATA_WIDTH     (1),
       .ONE_HOT_SEL    (0)

@@ -26,12 +26,12 @@ SCCOM = sccom
 whole_library : $(LIB_LIB_MEM_UNIT/)/_lib.qdb
 
 $(LIB_LIB_MEM_UNIT/)/_lib.qdb : ../../rtl/wip_mem_unit_lsq.sv tb_mem_unit.sv \
-		 colors.vh ../../../../../../includes/riscv_pkg.sv \
+		 colors.vh ../../../../../../includes/riscv_pkg_sarg.sv \
 		 ../../rtl/load_store_queue.sv ../../../../../../rtl/interface_dcache/rtl/interface_dcache.sv \
 		 ../../../../../../includes/drac_pkg.sv \
 		$(SV_STD__std)
 	$(VLOG) -work lib_mem_unit/ +acc=rn +incdir+ \
-		 ../../../../../../includes/riscv_pkg.sv ../../../../../../includes/drac_pkg.sv \
+		 ../../../../../../includes/riscv_pkg_sarg.sv ../../../../../../includes/drac_pkg.sv \
 		 ../../../../../../rtl/interface_dcache/rtl/interface_dcache.sv \
 		 ../../rtl/load_store_queue.sv ../../rtl/wip_mem_unit_lsq.sv \
 		 tb_mem_unit.sv colors.vh

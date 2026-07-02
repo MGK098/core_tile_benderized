@@ -23,7 +23,7 @@
  *  Description   : Blackbox model of a 1RW SRAM with write bit mask
  *  History       :
  */
-(* black_box *) module hpdcache_sram_wmask_1rw
+(* black_box *) module hpdcache_sram_sarg_wmask_sarg_1rw_sarg
 #(
     parameter int unsigned ADDR_SIZE = 0,
     parameter int unsigned DATA_SIZE = 0,

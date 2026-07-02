@@ -404,14 +404,14 @@ module axi_arbiter
   axi_cache_req_t       axi_req;
   axi_cache_resp_t      axi_resp;
 
-  hpdcache_mem_to_axi_write #(
+  hpdcache_mem_to_axi_write_sarg #(
       .aw_chan_t          (aw_chan_t),
       .w_chan_t           (axi_cache_w_chan_t),
       .b_chan_t           (b_chan_t),
       .hpdcache_mem_req_t     (hpdcache_mem_req_t),
       .hpdcache_mem_req_w_t   (hpdcache_mem_req_w_t),
       .hpdcache_mem_resp_w_t  (hpdcache_mem_resp_w_t)
-  ) i_hpdcache_mem_to_axi_write (
+  ) i_hpdcache_mem_to_axi_write_sarg (
       .req_ready_o        (dcache_write_ready_o),
       .req_valid_i        (dcache_write_valid_i),
       .req_i              (dcache_write_i),
@@ -437,12 +437,12 @@ module axi_arbiter
       .axi_b_ready_o      (axi_req.b_ready)
   );
 
-  hpdcache_mem_to_axi_read #(
+  hpdcache_mem_to_axi_read_sarg #(
     .ar_chan_t            (ar_chan_t),
     .r_chan_t             (axi_cache_r_chan_t),
     .hpdcache_mem_req_t     (hpdcache_mem_req_t),
     .hpdcache_mem_resp_r_t  (hpdcache_mem_resp_r_t)
-  ) i_hpdcache_mem_to_axi_read (
+  ) i_hpdcache_mem_to_axi_read_sarg (
     .req_ready_o          (mem_req_read_ready_arb),
     .req_valid_i          (mem_req_read_valid_arb),
     .req_i                (mem_req_read_arb),

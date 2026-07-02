@@ -21,12 +21,12 @@ SCCOM = sccom
 
 whole_library : $(LIB_LIB_MODULE/)/_lib.qdb
 
-$(LIB_LIB_MODULE/)/_lib.qdb : tb_regfile.sv colors.vh ../../../../../../includes/riscv_pkg.sv \
+$(LIB_LIB_MODULE/)/_lib.qdb : tb_regfile.sv colors.vh ../../../../../../includes/riscv_pkg_sarg.sv \
 		 ../../../../../../rtl/datapath/rtl/rr_stage/rtl/regfile.sv \
 		 ../../../../../../includes/drac_pkg.sv \
 		$(SV_STD__std)
 	$(VLOG) -work lib_module/ +acc=rn +incdir+ \
-		 ../../../../../../includes/riscv_pkg.sv ../../../../../../includes/drac_pkg.sv \
+		 ../../../../../../includes/riscv_pkg_sarg.sv ../../../../../../includes/drac_pkg.sv \
 		 ../../../../../../rtl/datapath/rtl/rr_stage/rtl/regfile.sv \
 		 tb_regfile.sv colors.vh
 

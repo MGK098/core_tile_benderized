@@ -8,7 +8,7 @@
 ./rtl/common_cells/src/rr_arb_tree.sv
 ./rtl/common_cells/src/exp_backoff.sv
 ./rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_pkg.sv
-./includes/riscv_pkg.sv
+./includes/riscv_pkg_sarg.sv
 ./includes/def_pkg.sv
 ./includes/drac_pkg.sv
 ./rtl/register.sv
@@ -39,7 +39,7 @@
 ./rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_fmt_slice.sv
 ./rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_opgroup_multifmt_slice.sv
 ./rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_rounding.sv
-./rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_top.sv
+./rtl/datapath/rtl/exe_stage/rtl/fpu/fpnew_top_sargantana.sv
 ./rtl/datapath/rtl/exe_stage/rtl/fpu/fpu_drac_wrapper.sv
 ./rtl/datapath/rtl/exe_stage/rtl/alu/alu.sv
 ./rtl/datapath/rtl/exe_stage/rtl/alu/alu_add.sv
@@ -52,7 +52,7 @@
 ./rtl/datapath/rtl/exe_stage/rtl/alu/zero_counter/alu_count_zeros_LZC32.sv
 ./rtl/datapath/rtl/exe_stage/rtl/alu/alu_count_pop.sv
 ./rtl/datapath/rtl/exe_stage/rtl/exe_stage.sv
-./rtl/datapath/rtl/exe_stage/rtl/branch_unit.sv
+./rtl/datapath/rtl/exe_stage/rtl/branch_unit_sarg.sv
 ./rtl/datapath/rtl/exe_stage/rtl/simd/functional_unit.sv
 ./rtl/datapath/rtl/exe_stage/rtl/simd/vcomp.sv
 ./rtl/datapath/rtl/exe_stage/rtl/simd/vredtree.sv
@@ -75,7 +75,7 @@
 ./rtl/datapath/rtl/exe_stage/rtl/simd/vnclip.sv
 ./rtl/datapath/rtl/exe_stage/rtl/simd/vsmul.sv
 ./rtl/datapath/rtl/exe_stage/rtl/div_4bits.sv
-./rtl/datapath/rtl/exe_stage/rtl/store_buffer.sv
+./rtl/datapath/rtl/exe_stage/rtl/store_buffer_sarg.sv
 ./rtl/datapath/rtl/exe_stage/rtl/vagu.sv
 ./rtl/datapath/rtl/if_stage_1/rtl/bimodal_predictor.sv
 ./rtl/datapath/rtl/if_stage_1/rtl/return_address_stack.sv

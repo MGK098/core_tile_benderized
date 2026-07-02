@@ -37,7 +37,7 @@ import mmu_pkg::*;
     output hpdcache_req_t               req_dcache_o,
     output logic                        req_dcache_abort_o,
     output hpdcache_tag_t               req_dcache_tag_o,
-    output hpdcache_pkg::hpdcache_pma_t req_dcache_pma_o,
+    output hpdcache_pkg_sarg::hpdcache_pma_t req_dcache_pma_o,
     input  logic                        rsp_dcache_valid_i,
     input  hpdcache_rsp_t               rsp_dcache_i
 );
@@ -66,7 +66,7 @@ import mmu_pkg::*;
 
         req_dcache_o.addr_tag = ptw_dmem_comm_i.req.addr[SIZE_VADDR:ADDR_OFFSET_BITS];
         req_dcache_o.addr_offset = ptw_dmem_comm_i.req.addr[ADDR_OFFSET_BITS-1:0];
-        req_dcache_o.op = ((ptw_dmem_comm_i.req.cmd == MMU_AMO_OR) ? hpdcache_pkg::HPDCACHE_REQ_AMO_OR : hpdcache_pkg::HPDCACHE_REQ_LOAD);
+        req_dcache_o.op = ((ptw_dmem_comm_i.req.cmd == MMU_AMO_OR) ? hpdcache_pkg_sarg::HPDCACHE_REQ_AMO_OR : hpdcache_pkg_sarg::HPDCACHE_REQ_LOAD);
         req_dcache_o.size = ptw_dmem_comm_i.req.typ[2:0];
 
         // Put the data in the corresponding word within the request
@@ -86,7 +86,7 @@ import mmu_pkg::*;
         req_dcache_o.phys_indexed = 1'b1;
         req_dcache_o.pma.io = 1'b0;
         req_dcache_o.pma.uncacheable = 1'b0;
-        req_dcache_o.pma.wr_policy_hint = hpdcache_pkg::HPDCACHE_WR_POLICY_AUTO;
+        req_dcache_o.pma.wr_policy_hint = hpdcache_pkg_sarg::HPDCACHE_WR_POLICY_AUTO;
 
         req_dcache_abort_o = 1'b0;
         req_dcache_tag_o = '0;

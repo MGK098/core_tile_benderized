@@ -20,7 +20,7 @@
 
 // This module implements the Zihpm (v2.0) (previously known as "Counters") and Sscofpmf (v0.5.2) extensions
 module hpm_counters
-    import riscv_pkg::*;
+    import riscv_pkg_sarg::*;
 #(
     parameter CSR_ADDR_WIDTH = 12,
     parameter XLEN = 64,
@@ -94,9 +94,9 @@ module hpm_counters
             // the counting of events in the current privilege mode is not disabled (mhpmeventX bit 62/61/60 is clear)
             // Hypervisor Extension (H) not supported (mhpmeventX bits 59 and 58)
             if (!mcountinhibit_i[i] && 
-               (!(((priv_lvl_i == riscv_pkg::PRIV_LVL_M) && mhpmevent_q[i][62]) ||
-               ((priv_lvl_i    == riscv_pkg::PRIV_LVL_S) && mhpmevent_q[i][61]) ||
-               ((priv_lvl_i    == riscv_pkg::PRIV_LVL_U) && mhpmevent_q[i][60])))) begin
+               (!(((priv_lvl_i == riscv_pkg_sarg::PRIV_LVL_M) && mhpmevent_q[i][62]) ||
+               ((priv_lvl_i    == riscv_pkg_sarg::PRIV_LVL_S) && mhpmevent_q[i][61]) ||
+               ((priv_lvl_i    == riscv_pkg_sarg::PRIV_LVL_U) && mhpmevent_q[i][60])))) begin
                 // mhpmeventX[55:0] is the position (in the input vector) of the event to be counted in mhpmcounterX (mhpmeventX[55:0] == 0 means "no event")
                 if ((mhpmevent_q[i][55:0] > 0) && (mhpmevent_q[i][55:0] <= HPM_NUM_EVENTS)) begin
                     mhpmcounter_d[i] = trunc_sum_64bits(mhpmcounter_q[i] + events_i[mhpmevent_q[i][HPM_NUM_EVENTS_BITS-1:0]]);

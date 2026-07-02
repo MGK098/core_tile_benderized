@@ -27,7 +27,7 @@
 
 
 import drac_pkg::*;
-import riscv_pkg::*;
+import riscv_pkg_sarg::*;
  
 module vdiv 
 (

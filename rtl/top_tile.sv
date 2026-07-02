@@ -196,7 +196,7 @@ localparam int unsigned ICACHE_VPN_SIZE = PHY_VIRT_MAX_ADDR_SIZE - ICACHE_INDEX_
 parameter HPDCACHE_NREQUESTERS = 2; // Core + PTW
 
 // Build the HPDC core request and response types
-localparam hpdcache_pkg::hpdcache_cfg_t HPDcacheCfg = sargBuildHPDCCfg(DracCfg);
+localparam hpdcache_pkg_sarg::hpdcache_cfg_t HPDcacheCfg = sargBuildHPDCCfg(DracCfg);
 `SARGANTANA_TYPEDEF_HPDC_REQ_RSP(HPDcacheCfg);
 
 // Core-dCache Interface
@@ -205,7 +205,7 @@ logic          dcache_req_ready [HPDCACHE_NREQUESTERS];
 hpdcache_req_t dcache_req       [HPDCACHE_NREQUESTERS];
 logic          dcache_req_abort [HPDCACHE_NREQUESTERS];
 hpdcache_tag_t dcache_req_tag   [HPDCACHE_NREQUESTERS];
-hpdcache_pkg::hpdcache_pma_t dcache_req_pma   [HPDCACHE_NREQUESTERS];
+hpdcache_pkg_sarg::hpdcache_pma_t dcache_req_pma   [HPDCACHE_NREQUESTERS];
 
 logic           dcache_rsp_valid [HPDCACHE_NREQUESTERS];
 hpdcache_rsp_t  dcache_rsp [HPDCACHE_NREQUESTERS];
@@ -476,7 +476,7 @@ function wbuf_timecnt_t trunc_wbuf_timecnt(input [31:0] val_in);
     trunc_wbuf_timecnt = val_in[$clog2(DracCfg.DCacheWBUFTh+1)-1:0];
 endfunction
 
-hpdcache #(
+hpdcache_sarg #(
     .HPDcacheCfg          (HPDcacheCfg),
     .wbuf_timecnt_t       (wbuf_timecnt_t),
     .hpdcache_tag_t       (hpdcache_tag_t),

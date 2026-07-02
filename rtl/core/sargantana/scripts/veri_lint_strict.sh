@@ -26,7 +26,7 @@ while read p; do
   #include all the founded rtl folders as includes in case you have dependences 
   #grep for warnings and errors and save it on a variable. Notice that sterr is 
   #required
-  (verilator --lint-only  includes/riscv_pkg.sv includes/drac_pkg.sv $include_dirs "$p") 
+  (verilator --lint-only  includes/riscv_pkg_sarg.sv includes/drac_pkg.sv $include_dirs "$p") 
   #Detect if there was an error in previous command
   if [ "$?" -ne "0" ]; then
    exit 1

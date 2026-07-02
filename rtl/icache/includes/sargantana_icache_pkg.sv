@@ -54,7 +54,7 @@ localparam int unsigned ICACHE_TAG_WIDTH    = TAG_WIDHT;
 localparam int unsigned ICACHE_IDX_WIDTH    = ADDR_WIDHT;
 
 `ifdef FETCH_ONE_INST
-    localparam int unsigned FETCH_WIDHT = riscv_pkg::INST_SIZE;
+    localparam int unsigned FETCH_WIDHT = riscv_pkg_sarg::INST_SIZE;
 `else
     localparam int unsigned FETCH_WIDHT = drac_pkg::ICACHELINE_SIZE;
 `endif

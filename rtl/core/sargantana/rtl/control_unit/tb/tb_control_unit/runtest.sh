@@ -8,7 +8,7 @@ rm -rf lib_module
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog $VLOG_FLAGS +acc=rn +incdir+ ${TOP_DIR}includes/riscv_pkg.sv ${TOP_DIR}includes/drac_pkg.sv ${TOP_DIR}rtl/control_unit/rtl/control_unit.sv tb_module.sv colors.vh
+vlog $VLOG_FLAGS +acc=rn +incdir+ ${TOP_DIR}includes/riscv_pkg_sarg.sv ${TOP_DIR}includes/drac_pkg.sv ${TOP_DIR}rtl/control_unit/rtl/control_unit.sv tb_module.sv colors.vh
 vmake lib_module/ > Makefile_test
 
 if [ -z "$1" ]

@@ -29,7 +29,7 @@ while read p; do
   #grep for warnings and errors and save it on a variable. Notice that sterr is 
   #required
   echo -e "$GREEN $p $NC"
-  (verilator --lint-only   includes/riscv_pkg.sv includes/drac_pkg.sv $include_dirs "$p"| grep 'warning\|error')2>&1 | tee -a $artifact 
+  (verilator --lint-only   includes/riscv_pkg_sarg.sv includes/drac_pkg.sv $include_dirs "$p"| grep 'warning\|error')2>&1 | tee -a $artifact 
 done <<< "$rtl_files"
 
 #check if there is an artifact, due to errors or warnings
