@@ -1,51 +1,10 @@
-/*
- *  HPDcache memory read adapter AXI4 AR / R channels
- *
- *  AR path : purely combinational pass-through  (req_i ? axi_ar_o)
- *            req_ready fires the same cycle axi_ar_ready is high,
- *            subject to the metadata FIFO not being full.
- *            Zero latency no FSM, no latching on the request path.
- *
- *  R  path : 2-state sequential FSM, assembles AXI_DATA_WIDTH-bit
- *            beats into a LINE_W-bit cache line and delivers to core.
- *
- *  AR / R decoupling
- *    AR and R are fully independent.  New AR requests can be accepted
- *    while the R assembler is still delivering a previous response.
- *    A small metadata FIFO (META_FIFO_DEPTH entries, must be power-of-2)
- *    bridges the two paths: per-transaction context (is_uc, word_idx)
- *    is pushed when an AR is accepted and popped when the last R beat
- *    is received.  req_ready_o is gated by ~meta_full to prevent
- *    overflow  hardware protection not just an assertion.
- *
- *  UC vs cacheable handling
- *    Cacheable (mem_req_size > AXI_BYTES_LOG2) :
- *      8-beat burst  shift-in LSB-first, beat-0 lands at [63:0].
- *    Uncacheable (mem_req_size <= AXI_BYTES_LOG2) :
- *      Single beat  placed at the correct 64-bit word slot inside
- *      the 512-bit response word using the captured address offset.
- *    Boundary: mem_req_size == AXI_BYTES_LOG2 (= 3 for 64-bit AXI)
- *      produces axi_len=0 (single beat) and is_uc=true  consistent.
- *      The hpdcache UC handler never issues cacheable requests at this
- *      size, so the boundary is safe.
- *
- *  Assumptions
- *    - hpdcache holds req_valid + req_i stable until req_ready
- *      (standard valid/ready protocol).
- *    - axi_id_serialize downstream ensures R beats for different
- *      transactions do not interleave on this interface.
- *    - META_FIFO_DEPTH must be a power of 2 (enforced below).
- *      4 is sufficient for the Sargantana/Cheshire pipeline depth
- *      (AR?SpillAR?xbar?LLC?R  12-15 cycles; miss handler issues
- *      at most ~1 AR per 2 cycles ? at most ~6 in flight).
- */
 module hpdcache_mem_to_axi_read_sarg
     import hpdcache_pkg_sarg::*;
     import axi_pkg::*;
 #(
     parameter  int unsigned AXI_DATA_WIDTH  = 64,
     parameter  int unsigned LINE_W          = 512,
-    parameter  int unsigned META_FIFO_DEPTH = 16,         // must be power of 2
+    parameter  int unsigned META_FIFO_DEPTH = 4,        // must be power of 2
     parameter  type         hpdcache_mem_req_t    = logic,
     parameter  type         hpdcache_mem_resp_r_t = logic,
     parameter  type         ar_chan_t             = logic,
@@ -85,11 +44,7 @@ module hpdcache_mem_to_axi_read_sarg
     localparam int unsigned WORD_IDX_W      = LINE_BYTES_LOG2 - AXI_BYTES_LOG2;
     localparam int unsigned PTR_W           = $clog2(META_FIFO_DEPTH);
 
-    // ----------------------------------------------------------------
-    //  Issue 3 fix enforce META_FIFO_DEPTH is a power of 2
-    //  Pointer wrap  PTR_W'(ptr + 1)  is only correct when depth is
-    //  a power of 2; catch misconfiguration at elaboration time.
-    // ----------------------------------------------------------------
+
     initial begin
         assert ((META_FIFO_DEPTH & (META_FIFO_DEPTH - 1)) == 0)
             else $fatal(1,
@@ -146,17 +101,6 @@ module hpdcache_mem_to_axi_read_sarg
     assign axi_ar_valid_o = req_valid_i;
 
 
-    // ================================================================
-    //  AR METADATA FIFO
-    //
-    //  Captures per-transaction context when AR is accepted and
-    //  delivers it to the R assembler when that transaction's beats
-    //  arrive.  Circular buffer with power-of-2 pointer wrap.
-    //
-    //  is_uc     transaction is uncacheable (single beat)
-    //  word_idx  which 64-bit slot in the 512-bit line for UC data
-    // ================================================================
-
     typedef struct packed {
         logic                   is_uc;
         logic [WORD_IDX_W-1:0]  word_idx;
@@ -187,7 +131,7 @@ module hpdcache_mem_to_axi_read_sarg
         end else begin
             if (meta_push) begin
                 //  Issue 2  boundary: size == AXI_BYTES_LOG2 gives
-                //  axi_len=0 (single beat) and is_uc=true  correct.
+                //  axi_len=0 (single beat) and is_uc=true    correct.
                 meta_q[meta_wr_ptr_q].is_uc   <=
                     (req_i.mem_req_size <= hpdcache_mem_size_t'(AXI_BYTES_LOG2));
                 meta_q[meta_wr_ptr_q].word_idx <=
@@ -210,9 +154,6 @@ module hpdcache_mem_to_axi_read_sarg
 
     // ================================================================
     //  R PATH  2-state sequential FSM
-    //
-    //  R_ASSEMBLE : accepting AXI R beats, building cache line
-    //  R_DELIVER  : presenting assembled line to core
     // ================================================================
 
     typedef enum logic {
@@ -251,7 +192,7 @@ module hpdcache_mem_to_axi_read_sarg
                 line_next = LINE_W'(axi_r_i.data) <<
                             (int'(cur_meta.word_idx) * AXI_DATA_WIDTH);
             else
-                //  Cacheable: shift-in LSB-first  beat-0 at [63:0]
+                //  Cacheable: shift-in LSB-first    beat-0 at [63:0]
                 line_next = {axi_r_i.data, line_q[LINE_W-1 : AXI_DATA_WIDTH]};
         end
     end
@@ -311,12 +252,12 @@ module hpdcache_mem_to_axi_read_sarg
         |=> (r_state_q == R_DELIVER)
     ) else $error("[read_adapter] last beat did not transition to R_DELIVER");
 
-    //  Metadata FIFO must not overflow  hardware gating on req_ready_o
+    //  Metadata FIFO must not overflow    hardware gating on req_ready_o
     //  makes this unreachable in normal operation; assertion as safety net
     assert property (
         @(posedge clk_i) disable iff (!rstn_i)
         meta_push |-> (PTR_W'(meta_wr_ptr_q + 1) != meta_rd_ptr_q)
-    ) else $error("[read_adapter] metadata FIFO overflow  increase META_FIFO_DEPTH");
+    ) else $error("[read_adapter] metadata FIFO overflow    increase META_FIFO_DEPTH");
 
     //  Metadata FIFO must not underflow
     assert property (

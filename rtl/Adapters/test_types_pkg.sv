@@ -12,18 +12,7 @@ package test_types_pkg;
     // ----------------------------------------------------------------
     // HPDCache memory interface types
     // ----------------------------------------------------------------
-    // causing the order mismatch with the one defined in hpd_pkg
-    /* 
-    typedef struct packed {
-        logic [39:0]                mem_req_addr;
-        logic [7:0]                mem_req_id;
-        hpdcache_mem_len_t         mem_req_len;       // [7:0]
-        hpdcache_mem_size_t        mem_req_size;      // [2:0]
-        logic                      mem_req_cacheable;
-        hpdcache_mem_command_e     mem_req_command;   // [1:0]
-        hpdcache_mem_atomic_e      mem_req_atomic;    // [3:0]
-    } hpdcache_mem_req_t;
-    */
+
 
     typedef struct packed {
         logic [39:0]            mem_req_addr;
@@ -35,29 +24,12 @@ package test_types_pkg;
         logic                   mem_req_cacheable;
     } hpdcache_mem_req_t;
 
-
-    /* 
-    typedef struct packed {
-        logic [63:0]               mem_req_w_data;
-        logic [7:0]                mem_req_w_be;
-        logic                      mem_req_w_last;
-    } hpdcache_mem_req_w_t;
-
-    */
  
     typedef struct packed {
        logic [511:0]           mem_req_w_data;    // ? was 64, now 512
        logic [63:0]            mem_req_w_be;      // ? was 8, now 64
        logic                   mem_req_w_last;
     } hpdcache_mem_req_w_t;     
-/* 
-    typedef struct packed {
-        hpdcache_mem_error_e       mem_resp_r_error;  // [1:0]
-        logic [7:0]                mem_resp_r_id;
-        logic [63:0]               mem_resp_r_data;
-        logic                      mem_resp_r_last;
-    } hpdcache_mem_resp_r_t;
-    */
 
     typedef struct packed {
     hpdcache_mem_error_e    mem_resp_r_error;
@@ -65,13 +37,7 @@ package test_types_pkg;
         logic [511:0]           mem_resp_r_data;   // ? was 64, now 512
         logic                   mem_resp_r_last;
     } hpdcache_mem_resp_r_t;
-/* 
-    typedef struct packed {
-        hpdcache_mem_error_e       mem_resp_w_error;  // [1:0]
-        logic [7:0]                mem_resp_w_id;
-        logic                      mem_resp_w_is_atomic;
-    } hpdcache_mem_resp_w_t;
- */
+
     typedef struct packed {
         logic                   mem_resp_w_is_atomic;  // ? first
         hpdcache_mem_error_e    mem_resp_w_error;

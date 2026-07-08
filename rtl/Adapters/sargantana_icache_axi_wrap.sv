@@ -1,13 +1,3 @@
-/*
- * sargantana_icache_axi_wrap.sv
- *
- * Sits between sargantana_top_icache and Cheshire AXI crossbar.
- *
- * Takes the icache miss request, converts to AXI AR burst,
- * collects 8 x 64-bit AXI R beats, assembles into 512-bit line,
- * delivers back to icache in one pulse.
- */
- // best  working abd achieved 2.605 CM/MHZ
 module sargantana_icache_axi_wrap #(
     parameter int unsigned PHY_ADDR_SIZE  = 40,
     parameter int unsigned AXI_DATA_WIDTH = 64,
@@ -54,10 +44,6 @@ module sargantana_icache_axi_wrap #(
     logic [PHY_ADDR_SIZE-1:0] addr_q;
     logic [511:0]             line_q;
 
-    // ----------------------------------------------------------------
-    // CHANGE 1: skip SEND_AR when ar_ready already high in IDLE
-    //           (same pattern as sargantana_ucache_axi_wrap)
-    // ----------------------------------------------------------------
     always_comb begin
         state_d = state_q;
         case (state_q)
@@ -96,11 +82,7 @@ module sargantana_icache_axi_wrap #(
             endcase
         end
     end
-
-    // ----------------------------------------------------------------
-    // CHANGE 2: assert AR combinationally from IDLE - no 1-cycle bubble
-    //           use live paddr in IDLE, saved addr_q in SEND_AR
-    // ----------------------------------------------------------------
+    
     always_comb begin
         axi_ar_valid_o = (state_q == SEND_AR)
                        || (state_q == IDLE && icache_ifill_req_valid_i);
@@ -115,8 +97,6 @@ module sargantana_icache_axi_wrap #(
 
     assign axi_r_ready_o = (state_q == RECEIVING);
 
-    // DELIVER state kept intentionally: ensures beat7 fully registered,
-    // no combinational path from AXI R data to icache SRAM write enable
     assign ifill_resp_valid_o = (state_q == DELIVER);
     assign ifill_resp_data_o  = line_q;
     assign ifill_resp_ack_o   = (state_q == DELIVER);

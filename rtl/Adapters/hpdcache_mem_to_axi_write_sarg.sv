@@ -1,46 +1,3 @@
-/*
- *  HPDcache memory write adapter - AXI4 AW / W / B channels
- *
- *  Multi-outstanding: supports up to N_OUTSTANDING concurrent
- *  in-flight write transactions (default N=4, must be power of 2).
- *
- *  Architecture:
- *
- *    Staging area : accepts req and data independently (may arrive
- *                   in different cycles from WBUF), latches both.
- *                   req_ready gated by ~fifo_full so we never
- *                   accept more than we can track.
- *                   Once req is latched, data is always accepted
- *                   to prevent deadlock.
- *
- *    AW path      : fires when both req and data are staged AND
- *                   both FIFOs have space.  On AW acceptance:
- *                     - pushes W data entry to data FIFO
- *                     - pushes req_id  to response FIFO
- *                     - clears staging for next transaction
- *
- *    Data FIFO    : N entries {tx_data, tx_strb, total_beats}
- *                   one per in-flight write.
- *
- *    W FSM        : independent 2-state FSM (W_IDLE / W_SEND).
- *                   pops data FIFO head into working registers,
- *                   sends AXI W beats.  Runs concurrently with
- *                   AW acceptance and B responses.
- *
- *    Response FIFO: N entries tracking outstanding B responses.
- *                   Gates AW acceptance when full (resp_fifo is
- *                   the throughput bottleneck since B takes ~20
- *                   cycles vs ~8 cycles for W).
- *
- *    B handler    : pops response FIFO when B arrives, forwards
- *                   response to hpdcache.  Fully independent of
- *                   AW and W.
- *
- *  Throughput:
- *    Old: 1 write per ~28 cycles (8 W + 20 WAIT_B serialised)
- *    New: maximum 1 write per ~8 cycles (W channel is the limit
- *         when WBUF provides writes fast enough)
- */
 module hpdcache_mem_to_axi_write_sarg
     import hpdcache_pkg_sarg::*;
     import axi_pkg::*;
@@ -110,8 +67,6 @@ module hpdcache_mem_to_axi_write_sarg
 
     // ================================================================
     //  STAGING AREA
-    //  Accepts req and data independently (different cycles from WBUF).
-    //  When both staged: drives AW channel combinationally.
     // ================================================================
 
     hpdcache_mem_req_t          req_q;
@@ -125,10 +80,6 @@ module hpdcache_mem_to_axi_write_sarg
     logic both_staged;
     assign both_staged = req_latched_q & data_latched_q;
 
-    // ----------------------------------------------------------------
-    //  UC detection uses registered values when req already latched,
-    //  uses live req_i when req arriving this cycle
-    // ----------------------------------------------------------------
     logic [WORD_IDX_WIDTH-1:0]  data_word_idx;
     logic                       data_is_uc;
 
@@ -146,9 +97,6 @@ module hpdcache_mem_to_axi_write_sarg
         end
     end
 
-    // ----------------------------------------------------------------
-    //  axi_len / axi_size from req_q (valid when both staged)
-    // ----------------------------------------------------------------
     logic [7:0] axi_len;
     logic [2:0] axi_size;
 
@@ -184,9 +132,6 @@ module hpdcache_mem_to_axi_write_sarg
     assign data_fifo_empty = (data_wr_ptr_q == data_rd_ptr_q);
     assign data_fifo_full  = (PTR_W'(data_wr_ptr_q + 1) == data_rd_ptr_q);
 
-    // Response FIFO  tracks expected B responses
-    // Fix: [N_OUTSTANDING-1:0][ID_W-1:0] so resp_fifo_q[i] gives
-    // [ID_W-1:0] when indexed by resp_wr/rd_ptr_q ? [0, N-1]
     logic [N_OUTSTANDING-1:0][ID_W-1:0]  resp_fifo_q;
     logic                  [PTR_W-1:0]   resp_wr_ptr_q;
     logic                  [PTR_W-1:0]   resp_rd_ptr_q;
@@ -198,20 +143,9 @@ module hpdcache_mem_to_axi_write_sarg
     assign resp_fifo_empty = (resp_wr_ptr_q == resp_rd_ptr_q);
     assign resp_fifo_full  = (PTR_W'(resp_wr_ptr_q + 1) == resp_rd_ptr_q);
 
-    // ----------------------------------------------------------------
-    //  can_push: space in both FIFOs required before firing a new AW
-    // ----------------------------------------------------------------
     logic can_push;
     assign can_push = ~data_fifo_full & ~resp_fifo_full;
 
-    // ================================================================
-    //  req_ready / req_data_ready
-    //
-    //  req_ready      : free staging AND FIFOs have space
-    //  req_data_ready : free staging; once req latched, always accept
-    //                   data regardless of FIFO state to prevent
-    //                   deadlock - we committed when we took the req
-    // ================================================================
     assign req_ready_o      = ~req_latched_q  & can_push;
     assign req_data_ready_o = ~data_latched_q & (can_push | req_latched_q);
 
@@ -230,7 +164,7 @@ module hpdcache_mem_to_axi_write_sarg
         end else begin
 
             // Accept req when ready
-            // (req_ready_o = ~req_latched & can_push  mutually exclusive
+            // (req_ready_o = ~req_latched & can_push   mutually exclusive
             //  with the clear below since req_latched=1 when clearing)
             if (req_valid_i && req_ready_o) begin
                 req_q         <= req_i;
@@ -254,7 +188,7 @@ module hpdcache_mem_to_axi_write_sarg
                 data_latched_q <= 1'b1;
             end
 
-            // Clear staging when AW accepted  entry pushed to FIFOs
+            // Clear staging when AW accepted   entry pushed to FIFOs
             if (both_staged && can_push && axi_aw_ready_i) begin
                 req_latched_q  <= 1'b0;
                 data_latched_q <= 1'b0;
@@ -265,8 +199,6 @@ module hpdcache_mem_to_axi_write_sarg
 
     // ================================================================
     //  AW PATH combinational
-    //  Fires when both staged and FIFOs have space.
-    //  On acceptance: pushes to both FIFOs and clears staging.
     // ================================================================
     assign axi_aw_valid_o = both_staged & can_push;
 
@@ -349,9 +281,6 @@ module hpdcache_mem_to_axi_write_sarg
 
     // ================================================================
     //  RESPONSE FIFO - tracks outstanding B responses
-    //  resp_fifo_q[i] gives [ID_W-1:0] (correct width after fix)
-    //  Note: stored ID never read back (resp_o.id comes from axi_b_i)
-    //  FIFO used purely for flow control  gates AW when full
     // ================================================================
     always_ff @(posedge clk_i or negedge rstn_i) begin : resp_fifo_ff
         if (!rstn_i) begin
@@ -371,8 +300,6 @@ module hpdcache_mem_to_axi_write_sarg
 
     // ================================================================
     //  W PATH - independent 2-state FSM (W_IDLE / W_SEND)
-    //  Pops data FIFO head into working registers, sends W beats.
-    //  Runs concurrently with AW acceptance and B responses.
     // ================================================================
     typedef enum logic { W_IDLE = 1'b0, W_SEND = 1'b1 } w_state_t;
 
@@ -409,7 +336,7 @@ module hpdcache_mem_to_axi_write_sarg
                     if (~data_fifo_empty) begin
                         // Load FIFO head into working registers (pop happens
                         // combinationally via data_fifo_pop, rd_ptr increments
-                        // at the same posedge  read uses pre-increment ptr ?)
+                        // at the same posedge   read uses pre-increment ptr ?)
                         w_data_q        <= data_fifo_q[data_rd_ptr_q].tx_data;
                         w_strb_q        <= data_fifo_q[data_rd_ptr_q].tx_strb;
                         w_total_beats_q <= data_fifo_q[data_rd_ptr_q].total_beats;
