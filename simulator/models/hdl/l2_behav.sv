@@ -246,15 +246,15 @@ module l2_behav #(
     input addr_t  dc_read_req_addr_i,
     input id_t    dc_read_req_tag_i,
     input size_t  dc_read_req_word_size_i,
-    input hpdcache_pkg::hpdcache_mem_command_e dc_read_req_cmd_i,  
-    input hpdcache_pkg::hpdcache_mem_atomic_e dc_read_req_atomic_i,  
+    input hpdcache_pkg_sarg::hpdcache_mem_command_e dc_read_req_cmd_i,  
+    input hpdcache_pkg_sarg::hpdcache_mem_atomic_e dc_read_req_atomic_i,  
 
     input logic   dc_read_resp_ready_i,
     output logic  dc_read_resp_valid_o,
     output data_t dc_read_resp_data_o,
     output id_t   dc_read_resp_tag_o,
     output logic  dc_read_resp_last_o,
-    output hpdcache_pkg::hpdcache_mem_error_e dc_read_resp_error_o,
+    output hpdcache_pkg_sarg::hpdcache_mem_error_e dc_read_resp_error_o,
 
     // Write
     output logic  dc_write_req_ready_o,
@@ -262,8 +262,8 @@ module l2_behav #(
     input addr_t  dc_write_req_addr_i,
     input size_t  dc_write_req_size_i,
     input id_t    dc_write_req_id_i,
-    input hpdcache_pkg::hpdcache_mem_command_e dc_write_req_cmd_i,
-    input hpdcache_pkg::hpdcache_mem_atomic_e dc_write_req_atomic_i,
+    input hpdcache_pkg_sarg::hpdcache_mem_command_e dc_write_req_cmd_i,
+    input hpdcache_pkg_sarg::hpdcache_mem_atomic_e dc_write_req_atomic_i,
 
     output logic dc_write_req_data_ready_o,
     input logic  dc_write_req_data_valid_i,
@@ -273,7 +273,7 @@ module l2_behav #(
 
     input logic  dc_write_resp_ready_i,
     output logic dc_write_resp_valid_o,
-    output hpdcache_pkg::hpdcache_mem_error_e  dc_write_resp_error_o,
+    output hpdcache_pkg_sarg::hpdcache_mem_error_e  dc_write_resp_error_o,
     output id_t  dc_write_resp_id_o,
     output logic dc_write_resp_is_atomic_o
 );
@@ -372,7 +372,7 @@ module l2_behav #(
     );
 
     assign dc_read_resp_last_o = dc_read_resp_valid_o;
-    assign dc_read_resp_error_o = hpdcache_pkg::HPDCACHE_MEM_RESP_OK;
+    assign dc_read_resp_error_o = hpdcache_pkg_sarg::HPDCACHE_MEM_RESP_OK;
 
     // *** dCache writeback channel ***
 
@@ -410,7 +410,7 @@ module l2_behav #(
     assign dc_write_req_ready_o = write_channel_req_ready & dc_write_req_valid_i & dc_write_req_data_valid_i;
     assign dc_write_req_data_ready_o = dc_write_req_ready_o;
 
-    assign dc_write_resp_error_o = hpdcache_pkg::HPDCACHE_MEM_RESP_OK;
+    assign dc_write_resp_error_o = hpdcache_pkg_sarg::HPDCACHE_MEM_RESP_OK;
     assign dc_write_resp_id_o = write_channel_rsp_id;
     assign dc_write_resp_valid_o = write_channel_rsp_valid;
     assign write_channel_rsp_ready = dc_write_resp_ready_i;

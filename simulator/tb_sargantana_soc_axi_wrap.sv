@@ -52,7 +52,7 @@
 module tb_sargantana_soc_axi_wrap;
 
   import drac_pkg::*;
-  import hpdcache_pkg::*;
+  import hpdcache_pkg_sarg::*;
 
   // ==========================================================================
   // DRAC configuration  mirror sim_top exactly
@@ -834,7 +834,7 @@ endmodule
 module tb_sargantana_soc_axi_wrap;
 
   import drac_pkg::*;
-  import hpdcache_pkg::*;
+  import hpdcache_pkg_sarg::*;
   import test_types_pkg::*;
 
   // ==========================================================================
@@ -1672,7 +1672,7 @@ endmodule
 module tb_sargantana_soc_axi_wrap;
 
   import drac_pkg::*;
-  import hpdcache_pkg::*;
+  import hpdcache_pkg_sarg::*;
   import test_types_pkg::*;
 
   // ==========================================================================
